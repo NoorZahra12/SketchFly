@@ -1,0 +1,131 @@
+<style>
+  .project-settings {
+    border-radius: 8px;
+    padding: 2rem;
+    width: 356px;
+    box-shadow: 0px 4px 6.6px 0px rgba(0, 0, 0, 0.06),
+      -10px 16px 10px 0px rgba(0, 0, 0, 0.16);
+    background: white;
+    color: black;
+  }
+
+  .project-settings h2 {
+    margin: 0 0 1.5rem 0;
+    font-size: 1.5rem;
+  }
+
+  .close-btn {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    width: 2rem;
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s ease;
+  }
+
+  section {
+    margin-bottom: 1.5rem;
+  }
+
+  label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+  }
+
+  input[type="text"],
+  input[type="number"] {
+    width: 100%;
+    padding: 0.6rem;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.05);
+    font-size: 1rem;
+    transition: border-color 0.2s ease;
+  }
+
+  input[type="text"]:focus,
+  input[type="number"]:focus {
+    outline: none;
+    border-color: #A970FF;
+  }
+
+  .canvas-inputs,
+  .fps-input {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .canvas-inputs input,
+  .fps-input input {
+    flex: 1;
+  }
+
+  .canvas-inputs span,
+  .fps-input span {
+    font-weight: 500;
+  }
+
+  .make-project {
+    width: fit-content;
+    padding: 0.8rem 2rem;
+    background: #A970FF;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+    /* centering */
+    display: block;
+    margin: 1rem auto 0;
+  }
+
+  .make-project:hover {
+    transform: translateY(-2px);
+    opacity: 0.9;
+  }
+
+  .make-project:active {
+    transform: translateY(0);
+  }
+</style>
+
+<div class="project-settings">
+  <button id="close-btn" class="close-btn">×</button>
+  <h2>Project Settings</h2>
+  
+  <section>
+    <label for="project-name">Name:</label>
+    <input type="text" id="project-name" placeholder="Project name" />
+  </section>
+
+  <section>
+    <label>Canvas size:</label>
+    <div class="canvas-inputs">
+      <input type="number" id="canvas-width" placeholder="width" value="800" />
+      <span>×</span>
+      <input type="number" id="canvas-height" placeholder="height" value="600" />
+    </div>
+  </section>
+
+  <section>
+    <label for="fps-value">Frames per second:</label>
+    <div class="fps-input">
+      <input type="number" id="fps-value" value="12" min="1" max="60" />
+      <span>fps</span>
+    </div>
+  </section>
+
+  <button id="make-project-btn" class="make-project">New Project</button>
+</div>
+

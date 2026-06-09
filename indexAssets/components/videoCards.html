@@ -1,0 +1,112 @@
+<style>
+        .video-player,
+    .video-player * {
+        box-sizing: border-box;
+    }
+
+    .video-player {
+        border-radius: 8px;
+        border-style: solid;
+        border-color: #d9d9d9;
+        border-width: 1px;
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        align-items: flex-start;
+        justify-content: flex-start;
+        position: relative;
+        overflow: hidden;
+        width: fit-content;
+        height: fit-content;
+    }
+
+    .player {
+        flex-shrink: 0;
+        width: 272px;
+        height: 163px;
+        position: relative;
+        overflow: visible;
+    }
+
+    .infos {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        width: 272px;
+        position: relative;
+    }
+
+    .main-info {
+        display: flex;
+        flex-direction: row;
+        gap: 0px;
+        align-items: flex-start;
+        justify-content: flex-start;
+        align-self: stretch;
+        flex-shrink: 0;
+        position: relative;
+    }
+
+    .project-name {
+        color: #000000;
+        text-align: left;
+        font-family: var(--body-base-font-family, "Inter-Regular", sans-serif);
+        font-size: var(--body-base-font-size, 16px);
+        line-height: var(--body-base-line-height, 140%);
+        font-weight: var(--body-base-font-weight, 400);
+        position: relative;
+        flex: 1;
+    }
+
+    ._00-00 {
+        color: #757575;
+        text-align: left;
+        font-family: var(--body-small-font-family, "Inter-Regular", sans-serif);
+        font-size: var(--body-small-font-size, 14px);
+        line-height: var(--body-small-line-height, 140%);
+        font-weight: var(--body-small-font-weight, 400);
+        position: relative;
+    }
+
+    .round {
+        border-radius: 28px;
+        border-style: solid;
+        border-color: transparent;
+        border-width: 1px;
+        flex-shrink: 0;
+        width: 22px;
+        height: 22px;
+        position: relative;
+    }
+
+    .div {
+        color: #000000;
+        text-align: center;
+        font-family: "Roboto-Bold", sans-serif;
+        font-size: 24px;
+        line-height: 16px;
+        letter-spacing: 0.5px;
+        font-weight: 700;
+        position: absolute;
+        left: 0px;
+        top: 0px;
+        width: 22px;
+        height: 22px;
+    }
+</style>
+<div class="video-player">
+    <img class="player" src="player0.svg" />
+    <div class="infos">
+        <div class="main-info">
+            <div class="project-name">Dummy Here</div>
+            <div class="_00-00">00:00</div>
+            <div class="round">
+                <div class="div">⋮</div>
+            </div>
+        </div>
+    </div>
+</div>

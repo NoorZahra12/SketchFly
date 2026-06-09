@@ -1,0 +1,179 @@
+<style>
+    .video-player,
+    .video-player * {
+        box-sizing: border-box;
+    }
+
+    .video-player {
+        border-radius: 8px;
+        border: 1px solid rgba(255, 255, 255, 0.22);
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        align-items: flex-start;
+        justify-content: flex-start;
+        position: relative;
+        overflow: hidden;
+        width: fit-content;
+        height: fit-content;
+        background: rgba(16, 26, 52, 0.5);
+        box-shadow:
+            0 18px 40px rgba(6, 14, 40, 0.45),
+            inset 0 1px 0 rgba(255, 255, 255, 0.12);
+        backdrop-filter: blur(22px) saturate(150%);
+        -webkit-backdrop-filter: blur(22px) saturate(150%);
+    }
+
+    body:not(.dark) .video-player {
+        background: rgba(255, 255, 255, 0.6);
+        border: 1px solid rgba(120, 140, 200, 0.18);
+        box-shadow:
+            0 14px 30px rgba(90, 120, 180, 0.16),
+            inset 0 1px 0 rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(16px) saturate(120%);
+        -webkit-backdrop-filter: blur(16px) saturate(120%);
+    }
+
+    .player {
+        flex-shrink: 0;
+        width: 272px;
+        height: 163px;
+        position: relative;
+        overflow: visible;
+        background: #d9d9d9;
+        border-radius: 4px;
+    }
+
+    .infos {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        width: 272px;
+        position: relative;
+    }
+
+    .main-info {
+        display: flex;
+        flex-direction: row;
+        gap: 0px;
+        align-items: flex-start;
+        justify-content: flex-start;
+        align-self: stretch;
+        flex-shrink: 0;
+        position: relative;
+    }
+
+    .project-name {
+        color: var(--text);
+        text-align: left;
+        font-family: var(--body-base-font-family, "Inter-Regular", sans-serif);
+        font-size: var(--body-base-font-size, 16px);
+        line-height: var(--body-base-line-height, 140%);
+        font-weight: var(--body-base-font-weight, 400);
+        position: relative;
+        flex: 1;
+    }
+
+    ._00-00 {
+        color: var(--text);
+        text-align: left;
+        font-family: var(--body-small-font-family, "Inter-Regular", sans-serif);
+        font-size: var(--body-small-font-size, 14px);
+        line-height: var(--body-small-line-height, 140%);
+        font-weight: var(--body-small-font-weight, 400);
+        position: relative;
+    }
+
+    .round {
+        border-radius: 28px;
+        border-style: solid;
+        border-color: transparent;
+        border-width: 1px;
+        flex-shrink: 0;
+        width: 22px;
+        height: 22px;
+        position: relative;
+    }
+
+    .div {
+        color: var(--text);
+        text-align: center;
+        font-family: "Roboto-Bold", sans-serif;
+        font-size: 24px;
+        line-height: 16px;
+        letter-spacing: 0.5px;
+        font-weight: 700;
+        position: absolute;
+        left: 0px;
+        top: 0px;
+        width: 22px;
+        height: 22px;
+    }
+</style>
+
+<div class="scroller">
+    <div class="video-player">
+        <img class="player" src="player0.svg" />
+        <div class="infos">
+            <div class="main-info">
+                <div class="project-name">Dummy Here</div>
+                <div class="_00-00">00:00</div>
+                <div class="round">
+                    <div class="div">⋮</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="video-player">
+        <img class="player" src="player0.svg" />
+        <div class="infos">
+            <div class="main-info">
+                <div class="project-name">Video Name</div>
+                <div class="_00-00">00:00</div>
+                <div class="round">
+                    <div class="div">⋮</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="video-player">
+        <img class="player" src="player0.svg" />
+        <div class="infos">
+            <div class="main-info">
+                <div class="project-name">Video Name</div>
+                <div class="_00-00">00:00</div>
+                <div class="round">
+                    <div class="div">⋮</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="video-player">
+        <img class="player" src="player0.svg" />
+        <div class="infos">
+            <div class="main-info">
+                <div class="project-name">Video Name</div>
+                <div class="_00-00">00:00</div>
+                <div class="round">
+                    <div class="div">⋮</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="video-player">
+        <img class="player" src="player0.svg" />
+        <div class="infos">
+            <div class="main-info">
+                <div class="project-name">Video Name</div>
+                <div class="_00-00">00:00</div>
+                <div class="round">
+                    <div class="div">⋮</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

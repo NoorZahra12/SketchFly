@@ -1,0 +1,47 @@
+// ========== STATIC COLORS ==========
+$primary: #A970FF;
+$navy: #0B2E83;
+$cyan: #25c9ff;
+
+// ========== THEME COLORS ==========
+:root {
+    --bg: #fff8f4;
+    --card: #fff3ca;
+    --accent: #ffc271;
+    --text: #000;
+    --color-bg1: rgb(220, 230, 255);
+    --color-bg2: rgb(255, 224, 240);
+    --color1: 70, 140, 255;
+    --color2: 160, 90, 255;
+    --color3: 255, 140, 205;
+    --color4: 255, 190, 120;
+    --color5: 255, 230, 140;
+    --color-interactive: 165, 95, 255;
+    --color-interactive-alt: 90, 160, 255;
+    --circle-size: 74%;
+    --blending: soft-light;
+    --gradient-opacity: 0.58;
+    --accent-size: 40%;
+    --accent-opacity: 0.55;
+}
+
+body.dark {
+    --bg: #02133b;
+    --card: #1A3F99;
+    --accent: #98e5ff;
+    --text: #fff;
+    --color-bg1: rgb(8, 12, 40);
+    --color-bg2: rgb(6, 22, 60);
+    --color1: 72, 110, 225;
+    --color2: 128, 88, 220;
+    --color3: 210, 120, 185;
+    --color4: 210, 150, 95;
+    --color5: 220, 200, 120;
+    --color-interactive: 169, 112, 255;
+    --color-interactive-alt: 90, 140, 255;
+    --circle-size: 76%;
+    --blending: soft-light;
+    --gradient-opacity: 0.62;
+    --accent-size: 38%;
+    --accent-opacity: 0.42;
+}

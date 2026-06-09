@@ -1,0 +1,12 @@
+// ========== ANIMATIONS ==========
+
+@keyframes activeNav {
+    from {
+        border-bottom-width: 0;
+        transition: linear 0.2s;
+    }
+    to {
+        border-bottom-width: 3px;
+        transition: linear 0.4s;
+    }
+}
