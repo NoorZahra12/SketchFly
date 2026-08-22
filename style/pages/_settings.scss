@@ -1,0 +1,291 @@
+@use '../util/variables' as variables;
+
+.settings-component {
+    font-family: inherit;
+    color: inherit;
+    width: 100%;
+    max-width: 560px;
+    padding: 0.5rem 0.5rem;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+
+    // ----- setting rows -----
+    .setting-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.6rem 0;
+        gap: 1rem;
+        border-bottom: 1px solid rgba(128, 128, 128, 0.08);
+
+        &:last-of-type {
+            border-bottom: none;
+        }
+    }
+
+    // ----- labels -----
+    .setting-label {
+        font-size: 0.95rem;
+        color: inherit;
+        opacity: 0.85;
+        flex-shrink: 0;
+        min-width: 110px;
+    }
+
+    // ----- controls – base -----
+    select,
+    .toggle,
+    .btn-tutorial,
+    input[type="number"] {
+        // background-color: transparent;
+        background-color: color-mix(in srgb, var(--card) 45%, transparent);
+        color: inherit;
+        border: 1px solid var(--color-bg1);
+        border-radius: 6px;
+        padding: 0.35rem 1.8rem 0.35rem 0.8rem;
+        font-size: 0.9rem;
+        font-family: inherit;
+        cursor: pointer;
+        outline: none;
+        transition: border-color 0.15s, background 0.1s, box-shadow 0.15s;
+        min-width: 160px;
+        appearance: none;
+        -webkit-appearance: none;
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="%23808080" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>');
+        background-repeat: no-repeat;
+        background-position: right 0.6rem center;
+        background-size: 12px;
+
+        // number input – no arrow, custom style
+        &[type="number"] {
+            background-image: none;
+            padding: 0.35rem 0.8rem;
+            min-width: 70px;
+            width: 70px;
+            -moz-appearance: textfield;
+            appearance: textfield;
+
+            &::-webkit-outer-spin-button,
+            &::-webkit-inner-spin-button {
+                -webkit-appearance: none;
+                margin: 0;
+            }
+        }
+    }
+
+    // buttons – no arrow
+    .toggle,
+    .btn-tutorial {
+        background-image: none;
+        padding: 0.35rem 1rem;
+        min-width: 120px;
+        text-align: center;
+    }
+
+    // interactive states – primary color
+    select,
+    .toggle,
+    .btn-tutorial,
+    input[type="number"] {
+        &:hover {
+            border-color: var(--accent);
+            background-color: var(--card);
+        }
+
+        &:focus {
+            border-color: var(--accent);
+        }
+    }
+
+    // ----- language dropdown with flag emoji -----
+    select option {
+        padding: 0.3rem 0.5rem;
+        background: transparent;
+        color: inherit;
+    }
+
+    // ----- theme row – icon + label + button -----
+    .theme-row {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.6rem;
+
+        .theme-text {
+            color: inherit;
+            opacity: 0.85;
+            font-size: 0.95rem;
+        }
+
+        .toggle {
+            margin-left: auto;
+        }
+    }
+
+    // SVG – inherits text color
+    svg {
+        width: 26px;
+        height: 26px;
+        fill: none;
+        stroke: inherit;
+        stroke-width: 1.8;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        stroke-miterlimit: 10;
+        opacity: 0.7;
+        flex-shrink: 0;
+    }
+
+    // ----- layout display – flexbox grid preview -----
+    .layout-preview {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    .layout-btn {
+        background: transparent;
+        color: inherit;
+        border: 1px solid var(--color-bg1);
+        border-radius: 6px;
+        padding: 0.4rem 0.8rem;
+        font-size: 0.8rem;
+        font-family: inherit;
+        cursor: pointer;
+        transition: border-color 0.15s, background 0.1s;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        min-width: auto;
+        background-color: color-mix(in srgb, var(--card) 45%, transparent);
+        
+        &.active {
+            border-color: var(--accent);
+            background-color: var(--card);
+            
+        }
+        &:hover{
+            border-color: var(--accent);
+            background-color: color-mix(in srgb, var(--bg) 85%, transparent);
+        }
+
+        svg {
+            width: 18px;
+            height: 18px;
+            stroke-width: 1.6;
+        }
+    }
+
+    // layout preview icons
+    .layout-icon {
+        display: inline-flex;
+        flex-direction: column;
+        gap: 2px;
+        width: 20px;
+        height: 16px;
+        border: 1px solid currentColor;
+        border-radius: 2px;
+        padding: 2px;
+        opacity: 0.6;
+
+        .row {
+            display: flex;
+            gap: 2px;
+        }
+
+        .cell {
+            height: 3px;
+            background: currentColor;
+            border-radius: 1px;
+            flex: 1;
+        }
+
+        &.grid .cell {
+            height: 5px;
+            flex: 1;
+        }
+
+        &.vertical .cell {
+            height: 8px;
+            width: 100%;
+        }
+
+        &.text-only .cell {
+            height: 3px;
+            width: 80%;
+        }
+    }
+
+    // ----- tutorial row -----
+    .tutorial-row {
+        justify-content: center;
+        padding-top: 0.8rem;
+        margin-top: 0.2rem;
+    }
+
+    .btn-tutorial {
+        min-width: 160px;
+        border-radius: 30px;
+        border-color: rgba(128, 128, 128, 0.15);
+        font-weight: 450;
+    }
+
+    // ----- responsive -----
+    @media (max-width: 480px) {
+        .setting-row {
+            flex-wrap: wrap;
+            gap: 0.3rem;
+        }
+
+        .setting-label {
+            min-width: 100%;
+        }
+
+        select,
+        .toggle,
+        input[type="number"] {
+            min-width: 100%;
+        }
+
+        .theme-row .toggle {
+            margin-left: 0;
+            width: 100%;
+        }
+
+        .layout-preview {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .btn-tutorial {
+            width: 100%;
+            max-width: 240px;
+        }
+    }
+
+    // ----- accessibility: focus-visible -----
+    select,
+    .toggle,
+    .btn-tutorial,
+    input[type="number"],
+    .layout-btn {
+        &:focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 2px;
+        }
+    }
+
+    // ----- high contrast mode -----
+    @media (prefers-contrast: high) {
+
+        select,
+        .toggle,
+        .btn-tutorial,
+        input[type="number"],
+        .layout-btn {
+            border-width: 2px;
+        }
+    }
+}

@@ -1,92 +1,97 @@
-<style>
-    section{
-        width: 100%;
-    }
-    article {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin: 1rem 0;
-        padding: 5px;
-        gap: 5px;
-        max-width: 400px;
-        margin: auto;
-    }
-    .settings-page svg{
-        width: 30px;
-        height: 30px;
-        /* color filtered inverse so people can see in any bg */
-        fill: none;
-        stroke: var(--text);
-        stroke-width: 2;
-        stroke-linecap: round;
-        stroke-linejoin: round;
-        stroke-miterlimit: 10;
-    }
+</head>
 
-</style>
-<section class="settings-page">
-    <article>
-        <span>Language</span>
-        <select>
-            <option>English</option>
-            <option>useapi</option>
+<!-- ========== SECTION (component root) ========== -->
+<section class="settings-component" role="region" aria-label="Settings">
+
+    <!-- Language -->
+    <div class="setting-row">
+        <span class="setting-label" id="lang-label">Language</span>
+        <select aria-labelledby="lang-label" aria-description="Select your preferred language">
+            <option value="en">🇬🇧 English</option>
+            <option value="es">🇪🇸 Español</option>
+            <option value="fr">🇫🇷 Français</option>
+            <option value="de">🇩🇪 Deutsch</option>
+            <option value="it">🇮🇹 Italiano</option>
+            <option value="pt">🇵🇹 Português</option>
+            <option value="ru">🇷🇺 Русский</option>
+            <option value="ja">🇯🇵 日本語</option>
+            <option value="ko">🇰🇷 한국어</option>
+            <option value="zh">🇨🇳 中文</option>
+            <option value="ar">🇸🇦 العربية</option>
+            <option value="hi">🇮🇳 हिन्दी</option>
         </select>
-    </article>
+    </div>
 
-    <article>
-        <span>Appearance</span>
-    </article>
+    <!-- Theme (switch) -->
+    <div class="setting-row theme-row">
+        <span class="theme-text" id="theme-label">Appearance</span>
+        <button class="toggle" aria-labelledby="theme-label" role="switch" aria-checked="false">
+            Switch Theme
+        </button>
+    </div>
 
-    <article>
-        <svg version="1.1" id="Icons" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
-            viewBox="0 0 32 32" xml:space="preserve">
-            <line class="st0" x1="16" y1="3" x2="16" y2="29" />
-            <path class="st0" d="M16,23c-3.87,0-7-3.13-7-7s3.13-7,7-7" />
-            <line class="st0" x1="6.81" y1="6.81" x2="8.93" y2="8.93" />
-            <line class="st0" x1="3" y1="16" x2="6" y2="16" />
-            <line class="st0" x1="6.81" y1="25.19" x2="8.93" y2="23.07" />
-            <path class="st0" d="M16,12.55C17.2,10.43,19.48,9,22.09,9c0.16,0,0.31,0.01,0.47,0.02c-1.67,0.88-2.8,2.63-2.8,4.64
-	c0,2.9,2.35,5.25,5.25,5.25c1.6,0,3.03-0.72,3.99-1.85C28.48,20.43,25.59,23,22.09,23c-2.61,0-4.89-1.43-6.09-3.55" />
-        </svg>
-        Theme <button class="toggle">Switch Theme</button>
-    </article>
+    <!-- Font size (integer only) -->
+    <div class="setting-row">
+        <span class="setting-label" id="fontsize-label">Font size</span>
+        <div style="display:flex; align-items:center; gap:0.3rem;">
+            <input type="number" min="8" max="32" value="16" step="1" aria-labelledby="fontsize-label"
+                aria-description="Font size in pixels, between 8 and 32">
+            <span style="opacity:0.5; font-size:0.8rem;">px</span>
+        </div>
+    </div>
 
-    <article>
-        <span>Font style</span>
-        <select>
-            <option>Sans</option>
-            <option>Serif</option>
-            <option>Mono</option>
-        </select>
-    </article>
+    <!-- Layout display (flexbox grid preview) -->
+    <div class="setting-row">
+        <span class="setting-label" id="layout-label">Layout display</span>
+        <div class="layout-preview" role="radiogroup" aria-labelledby="layout-label">
 
-    <article>
-        <span>Text size</span>
-        <select>
-            <option>Small</option>
-            <option>Medium</option>
-            <option>Large</option>
-        </select>
-    </article>
+            <!-- Grid view -->
+            <button class="layout-btn active" role="radio" aria-checked="true" aria-label="Grid view">
+                <span class="layout-icon grid" aria-hidden="true">
+                    <span class="row"><span class="cell"></span><span class="cell"></span></span>
+                    <span class="row"><span class="cell"></span><span class="cell"></span></span>
+                </span>
+                Grid
+            </button>
 
-    <article>
-        <span>Layout setting</span>
-        <select>
-            <option>Compact</option>
-            <option>Comfortable</option>
-        </select>
-    </article>
+            <!-- Vertical view -->
+            <button class="layout-btn" role="radio" aria-checked="false" aria-label="Vertical view">
+                <span class="layout-icon vertical" aria-hidden="true">
+                    <span class="cell"></span>
+                    <span class="cell"></span>
+                    <span class="cell"></span>
+                </span>
+                Vertical
+            </button>
 
-    <article>
-        <span>Project priorities</span>
-        <select>
-            <option>Show all projects</option>
-            <option>Show only starred</option>
-        </select>
-    </article>
-    <article>
-        <button>Tutorial</button>
-    </article>
+            <!-- Text only view -->
+            <button class="layout-btn" role="radio" aria-checked="false" aria-label="Text only view">
+                <span class="layout-icon text-only" aria-hidden="true">
+                    <span class="cell"></span>
+                    <span class="cell"></span>
+                    <span class="cell" style="width:60%;"></span>
+                </span>
+                Text
+            </button>
+
+            <!-- Compact view -->
+            <button class="layout-btn" role="radio" aria-checked="false" aria-label="Compact view">
+                <span class="layout-icon" aria-hidden="true" style="flex-direction:row; height:12px;">
+                    <span class="cell" style="height:6px;"></span>
+                    <span class="cell" style="height:6px;"></span>
+                    <span class="cell" style="height:6px;"></span>
+                </span>
+                Compact
+            </button>
+
+        </div>
+    </div>
+
+    <!-- Tutorial -->
+    <!-- <div class="setting-row tutorial-row">
+        <button class="btn-tutorial" aria-label="Open tutorial">
+            Tutorial
+        </button>
+    </div> -->
+
 </section>
-</div>

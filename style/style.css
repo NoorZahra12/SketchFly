@@ -1,9 +1,9 @@
 :root {
-  --bg: #fff8f4;
-  --card: #fff3ca;
-  --accent: #ffc271;
-  --text: #000;
-  --color-bg1: rgb(220, 230, 255);
+  --bg: #fffaeb;
+  --card: #ffc271;
+  --accent: #ffd6dd;
+  --text: #311914;
+  --color-bg1: rgb(160, 51, 255);
   --color-bg2: rgb(255, 224, 240);
   --color1: 70, 140, 255;
   --color2: 160, 90, 255;
@@ -21,7 +21,7 @@
 
 body.dark {
   --bg: #02133b;
-  --card: #1A3F99;
+  --card: #200360;
   --accent: #98e5ff;
   --text: #fff;
   --color-bg1: rgb(8, 12, 40);
@@ -50,6 +50,253 @@ body.dark {
     transition: linear 0.4s;
   }
 }
+.settings-component {
+  font-family: inherit;
+  color: inherit;
+  width: 100%;
+  max-width: 560px;
+  padding: 0.5rem 0.5rem;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.settings-component .setting-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.6rem 0;
+  gap: 1rem;
+  border-bottom: 1px solid rgba(128, 128, 128, 0.08);
+}
+.settings-component .setting-row:last-of-type {
+  border-bottom: none;
+}
+.settings-component .setting-label {
+  font-size: 0.95rem;
+  color: inherit;
+  opacity: 0.85;
+  flex-shrink: 0;
+  min-width: 110px;
+}
+.settings-component select,
+.settings-component .toggle,
+.settings-component .btn-tutorial,
+.settings-component input[type=number] {
+  background-color: color-mix(in srgb, var(--card) 45%, transparent);
+  color: inherit;
+  border: 1px solid var(--color-bg1);
+  border-radius: 6px;
+  padding: 0.35rem 1.8rem 0.35rem 0.8rem;
+  font-size: 0.9rem;
+  font-family: inherit;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.15s, background 0.1s, box-shadow 0.15s;
+  min-width: 160px;
+  -moz-appearance: none;
+       appearance: none;
+  -webkit-appearance: none;
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="%23808080" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>');
+  background-repeat: no-repeat;
+  background-position: right 0.6rem center;
+  background-size: 12px;
+}
+.settings-component select[type=number],
+.settings-component .toggle[type=number],
+.settings-component .btn-tutorial[type=number],
+.settings-component input[type=number][type=number] {
+  background-image: none;
+  padding: 0.35rem 0.8rem;
+  min-width: 70px;
+  width: 70px;
+  -moz-appearance: textfield;
+  -webkit-appearance: textfield;
+          appearance: textfield;
+}
+.settings-component select[type=number]::-webkit-outer-spin-button, .settings-component select[type=number]::-webkit-inner-spin-button,
+.settings-component .toggle[type=number]::-webkit-outer-spin-button,
+.settings-component .toggle[type=number]::-webkit-inner-spin-button,
+.settings-component .btn-tutorial[type=number]::-webkit-outer-spin-button,
+.settings-component .btn-tutorial[type=number]::-webkit-inner-spin-button,
+.settings-component input[type=number][type=number]::-webkit-outer-spin-button,
+.settings-component input[type=number][type=number]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.settings-component .toggle,
+.settings-component .btn-tutorial {
+  background-image: none;
+  padding: 0.35rem 1rem;
+  min-width: 120px;
+  text-align: center;
+}
+.settings-component select:hover,
+.settings-component .toggle:hover,
+.settings-component .btn-tutorial:hover,
+.settings-component input[type=number]:hover {
+  border-color: var(--accent);
+  background-color: var(--card);
+}
+.settings-component select:focus,
+.settings-component .toggle:focus,
+.settings-component .btn-tutorial:focus,
+.settings-component input[type=number]:focus {
+  border-color: var(--accent);
+}
+.settings-component select option {
+  padding: 0.3rem 0.5rem;
+  background: transparent;
+  color: inherit;
+}
+.settings-component .theme-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+}
+.settings-component .theme-row .theme-text {
+  color: inherit;
+  opacity: 0.85;
+  font-size: 0.95rem;
+}
+.settings-component .theme-row .toggle {
+  margin-left: auto;
+}
+.settings-component svg {
+  width: 26px;
+  height: 26px;
+  fill: none;
+  stroke: inherit;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-miterlimit: 10;
+  opacity: 0.7;
+  flex-shrink: 0;
+}
+.settings-component .layout-preview {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.settings-component .layout-btn {
+  background: transparent;
+  color: inherit;
+  border: 1px solid var(--color-bg1);
+  border-radius: 6px;
+  padding: 0.4rem 0.8rem;
+  font-size: 0.8rem;
+  font-family: inherit;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.1s;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-width: auto;
+  background-color: color-mix(in srgb, var(--card) 45%, transparent);
+}
+.settings-component .layout-btn.active {
+  border-color: var(--accent);
+  background-color: var(--card);
+}
+.settings-component .layout-btn:hover {
+  border-color: var(--accent);
+  background-color: color-mix(in srgb, var(--bg) 85%, transparent);
+}
+.settings-component .layout-btn svg {
+  width: 18px;
+  height: 18px;
+  stroke-width: 1.6;
+}
+.settings-component .layout-icon {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 20px;
+  height: 16px;
+  border: 1px solid currentColor;
+  border-radius: 2px;
+  padding: 2px;
+  opacity: 0.6;
+}
+.settings-component .layout-icon .row {
+  display: flex;
+  gap: 2px;
+}
+.settings-component .layout-icon .cell {
+  height: 3px;
+  background: currentColor;
+  border-radius: 1px;
+  flex: 1;
+}
+.settings-component .layout-icon.grid .cell {
+  height: 5px;
+  flex: 1;
+}
+.settings-component .layout-icon.vertical .cell {
+  height: 8px;
+  width: 100%;
+}
+.settings-component .layout-icon.text-only .cell {
+  height: 3px;
+  width: 80%;
+}
+.settings-component .tutorial-row {
+  justify-content: center;
+  padding-top: 0.8rem;
+  margin-top: 0.2rem;
+}
+.settings-component .btn-tutorial {
+  min-width: 160px;
+  border-radius: 30px;
+  border-color: rgba(128, 128, 128, 0.15);
+  font-weight: 450;
+}
+@media (max-width: 480px) {
+  .settings-component .setting-row {
+    flex-wrap: wrap;
+    gap: 0.3rem;
+  }
+  .settings-component .setting-label {
+    min-width: 100%;
+  }
+  .settings-component select,
+  .settings-component .toggle,
+  .settings-component input[type=number] {
+    min-width: 100%;
+  }
+  .settings-component .theme-row .toggle {
+    margin-left: 0;
+    width: 100%;
+  }
+  .settings-component .layout-preview {
+    width: 100%;
+    justify-content: center;
+  }
+  .settings-component .btn-tutorial {
+    width: 100%;
+    max-width: 240px;
+  }
+}
+.settings-component select:focus-visible,
+.settings-component .toggle:focus-visible,
+.settings-component .btn-tutorial:focus-visible,
+.settings-component input[type=number]:focus-visible,
+.settings-component .layout-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+@media (prefers-contrast: high) {
+  .settings-component select,
+  .settings-component .toggle,
+  .settings-component .btn-tutorial,
+  .settings-component input[type=number],
+  .settings-component .layout-btn {
+    border-width: 2px;
+  }
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -86,7 +333,7 @@ body header .logo {
   justify-self: center;
   padding: 5px;
   letter-spacing: 0.3px;
-  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.25), 0 6px 16px rgba(169, 112, 255, 0.25);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.25), 0 6px 16px rgba(108, 92, 231, 0.25);
   text-shadow: 0 1px 0 color-mix(in srgb, #fff 35%, transparent), 0 6px 18px color-mix(in srgb, var(--bg) 45%, transparent);
   filter: drop-shadow(0 0 10px color-mix(in srgb, var(--bg) 35%, transparent));
   display: flex;
@@ -111,7 +358,7 @@ body header .logo:hover {
 }
 body header .logo:hover h1 {
   transition: linear 0.2s;
-  color: #A970FF;
+  color: #6c5ce7;
 }
 body header nav {
   flex: 1;
@@ -144,6 +391,9 @@ body header nav .nav-btn {
   overflow: hidden;
   position: relative;
 }
+body header nav .nav-btn:hover {
+  background: rgba(var(--bg), 0.9);
+}
 @media (max-width: 600px) {
   body header nav .nav-btn {
     flex-direction: column;
@@ -162,11 +412,6 @@ body header nav .nav-btn.active {
     z-index: 5;
   }
 }
-body header nav .nav-btn:hover > * {
-  color: #A970FF;
-  transform: translateY(-2px);
-  transition: linear 0.2s;
-}
 body header nav .nav-btn::after {
   content: "";
   position: absolute;
@@ -174,7 +419,7 @@ body header nav .nav-btn::after {
   bottom: -2px;
   height: 3px;
   width: 0%;
-  background: #A970FF;
+  background: #6c5ce7;
   transform: translateX(-50%);
   transition: width 0.35s ease;
 }
@@ -186,6 +431,10 @@ body header nav .nav-btn.active::after {
     top: -2px;
     bottom: auto;
   }
+}
+body header nav .nav-btn:hover > * {
+  transform: translateY(-2px);
+  transition: linear 0.2s;
 }
 body main {
   position: relative;
@@ -409,25 +658,26 @@ body:not(.dark) header .logo img {
   z-index: 1000;
   letter-spacing: 0.3px;
   color: #fff;
-  background: linear-gradient(90deg, #A970FF 30%, rgb(199.6713286713, 163, 255) 100%);
-  box-shadow: 0 8px 20px rgba(169, 112, 255, 0.35);
+  background: linear-gradient(90deg, #6c5ce7 30%, rgb(148.0909090909, 136.4545454545, 237.5454545454) 100%);
+  box-shadow: 0 8px 20px rgba(108, 92, 231, 0.35);
   cursor: pointer;
   -webkit-user-select: none;
      -moz-user-select: none;
           user-select: none;
   position: relative;
   overflow: hidden;
-  border: 2px solid #A970FF;
+  border: 5px solid var(--bg);
+  border: none;
   transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease, color 0.2s ease, background 0.2s ease, border-color 0.25s ease;
 }
 .cta:hover {
   background: #efe6ff;
-  color: #A970FF;
+  color: #6c5ce7;
   filter: none;
 }
 .cta:active {
   transform: translateY(0);
-  box-shadow: 0 6px 16px rgba(169, 112, 255, 0.35);
+  box-shadow: 0 6px 16px rgba(108, 92, 231, 0.35);
 }
 .cta .cta-ripple {
   position: absolute;
@@ -436,9 +686,10 @@ body:not(.dark) header .logo img {
   border-radius: 50%;
   background: #fff;
   transform: translate(-50%, -50%);
-  transition: width 0.9s ease, height 0.9s ease, opacity 0.9s ease;
+  transition: width 0.9s ease, height 0.9s ease, opacity 0s ease;
   z-index: -1;
   opacity: 0.8;
+  filter: blur(5px);
 }
 .cta:hover .cta-ripple {
   width: 240%;
@@ -469,13 +720,12 @@ body:not(.dark) header .logo img {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 5px;
   text-align: center;
+  gap: 20px;
 }
 #default-section h1 {
   font-family: "Parisienne", cursive;
   font-size: 6.5vw;
-  letter-spacing: 1px;
 }
 @media (max-width: 600px) {
   #default-section h1 {
@@ -487,7 +737,6 @@ body:not(.dark) header .logo img {
 }
 #default-section p {
   font-size: clamp(0.95rem, 0.7vw + 0.75rem, 1.2rem);
-  margin: 10px 0 20px 0;
 }
 @media (max-width: 600px) {
   #default-section p {

@@ -1,3 +1,5 @@
+import { createProject, saveProject, getAllProjects } from "../projects.js";
+
 document.addEventListener("DOMContentLoaded", () => {
 
     // ----------------------CTA & NAVBAR ----------------------------------
@@ -179,20 +181,19 @@ document.addEventListener("DOMContentLoaded", () => {
                 // Attach make project handler
                 const makeBtn = modal.querySelector("#make-project-btn");
                 if (makeBtn) {
-                    makeBtn.addEventListener("click", () => {
+                    makeBtn.addEventListener("click", async () => {
                         const get = (sel) => modal.querySelector(sel)?.value ?? "";
-                        const projectData = {
-                            name: get("#project-name") || "Untitled Project",
-                            width: Number(get("#canvas-width")) || 800,
-                            height: Number(get("#canvas-height")) || 600,
-                            fps: Number(get("#fps-value")) || 12,
-                        };
-                        localStorage.setItem(
-                            "projectSettings",
-                            JSON.stringify(projectData),
+                        const project = createProject(
+                            get("#project-name") || "Untitled Project",
+                            {
+                                CANVAS_WIDTH: Number(get("#canvas-width")) || 800,
+                                CANVAS_HEIGHT: Number(get("#canvas-height")) || 600,
+                                FPS: Number(get("#fps-value")) || 12,
+                            },
                         );
+                        await saveProject(project);
                         closeModal(overlay);
-                        window.location.href = "editor.html";
+                        window.location.href = `editor.html?id=${encodeURIComponent(project.id)}`;
                     });
                 }
             })
@@ -263,8 +264,7 @@ document.addEventListener("DOMContentLoaded", () => {
         scroller.innerHTML = '';
 
         try {
-            const response = await fetch('./data/projects.json');
-            const projects = await response.json();
+            const projects = await getAllProjects();
             const templateResponse = await fetch('./indexAssets/components/projectCard.html');
             const template = await templateResponse.text();
 
@@ -281,9 +281,18 @@ document.addEventListener("DOMContentLoaded", () => {
                 projectCard.querySelector('.project-name').textContent = project.name;
                 projectCard.querySelector('.currentfpsIndicator').textContent = `${project.fps} FPS`;
                 projectCard.querySelector('.timedisplay').textContent = project.duration;
-                projectCard.querySelector('.thumbnail').addEventListener('click', () => {
-                    // localStorage.setItem('currentProjectId', project.id);
-                    window.location.href = 'editor.html';
+                projectCard.dataset.projectId = project.id;
+                const thumbnail = projectCard.querySelector('.thumbnail');
+                if (project.thumbnail) {
+                    const image = document.createElement('img');
+                    image.loading = 'lazy';
+                    image.alt = `${project.name} first frame`;
+                    image.src = URL.createObjectURL(new Blob([project.thumbnail], { type: 'image/png' }));
+                    image.onload = () => URL.revokeObjectURL(image.src);
+                    thumbnail.appendChild(image);
+                }
+                thumbnail.addEventListener('click', () => {
+                    window.location.href = `editor.html?id=${encodeURIComponent(project.id)}`;
                 });
                 scroller.appendChild(projectCard);
             });

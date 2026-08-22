@@ -1,6 +1,11 @@
+import { bufferToCanvas, canvasToBuffer, loadProject, saveProject } from "../projects.js";
+
+const urlParams = new URLSearchParams(window.location.search);
+const projectId = urlParams.get('id');
+
 //basic project settings
-const FPS = 12;
-const DEFAULT_LAYERS = 4;
+let FPS = 12;
+let DEFAULT_LAYERS = 4;
 const ROW_HEIGHT = 36;
 const MIN_VISIBLE_FRAMES = 100;
 const MIN_PX_PER_FRAME = 18;
@@ -8,8 +13,8 @@ const MAX_PX_PER_FRAME = 40;
 const MIN_CANVAS_SCALE = 0.5;
 const MAX_CANVAS_SCALE = 3;
 const MAX_UNDO = 25;
-const CANVAS_WIDTH = 800;
-const CANVAS_HEIGHT = 600;
+let CANVAS_WIDTH = 800;
+let CANVAS_HEIGHT = 600;
 
 
 //getting elements from html and setting up some variables
@@ -142,6 +147,122 @@ let pinchStartPanX = 0;
 let pinchStartPanY = 0;
 let pinchStartCenterX = 0;
 let pinchStartCenterY = 0;
+let project = null;
+let saveTimer = null;
+let saveInProgress = false;
+let saveRequested = false;
+
+async function serializeProject() {
+    const serializedLayers = [];
+    let firstClipImage = null;
+    let durationFrames = 1;
+
+    for (const layer of layers) {
+        const serializedLayer = [];
+        for (const clip of layer) {
+            const image = await canvasToBuffer(clip.canvas);
+            if (!firstClipImage) firstClipImage = image;
+            serializedLayer.push({
+                start: clip.start,
+                duration: clip.duration,
+                layerIndex: clip.layerIndex,
+                image
+            });
+            durationFrames = Math.max(durationFrames, clip.end());
+        }
+        serializedLayers.push(serializedLayer);
+    }
+
+    const thumbnailCanvas = document.createElement("canvas");
+    thumbnailCanvas.width = CANVAS_WIDTH;
+    thumbnailCanvas.height = CANVAS_HEIGHT;
+    const thumbnailCtx = thumbnailCanvas.getContext("2d");
+    for (let i = layers.length - 1; i >= 0; i--) {
+        for (const clip of layers[i]) {
+            if (clip.contains(0)) thumbnailCtx.drawImage(clip.canvas, 0, 0);
+        }
+    }
+    const thumbnail = await canvasToBuffer(thumbnailCanvas) || firstClipImage;
+
+    return {
+        ...project,
+        updatedAt: Date.now(),
+        settings: {
+            ...project.settings,
+            FPS,
+            CANVAS_WIDTH,
+            CANVAS_HEIGHT,
+            DEFAULT_LAYERS
+        },
+        layers: serializedLayers,
+        currentFrame,
+        onion,
+        onionNext,
+        minVisibleFrames,
+        pxPerFrame,
+        durationFrames,
+        thumbnail
+    };
+}
+
+async function saveCurrentProject() {
+    if (!project) return;
+    if (saveInProgress) {
+        saveRequested = true;
+        return;
+    }
+    saveInProgress = true;
+    try {
+        project = await serializeProject();
+        await saveProject(project);
+    } catch (error) {
+        console.error("Could not save project", error);
+    } finally {
+        saveInProgress = false;
+        if (saveRequested) {
+            saveRequested = false;
+            scheduleSave();
+        }
+    }
+}
+
+function scheduleSave() {
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(saveCurrentProject, 500);
+}
+
+async function restoreProject() {
+    project = await loadProject(projectId);
+    if (!project) throw new Error("Project not found");
+
+    const settings = project.settings || {};
+    FPS = Number(settings.FPS) || FPS;
+    DEFAULT_LAYERS = Number(settings.DEFAULT_LAYERS) || DEFAULT_LAYERS;
+    CANVAS_WIDTH = Number(settings.CANVAS_WIDTH) || CANVAS_WIDTH;
+    CANVAS_HEIGHT = Number(settings.CANVAS_HEIGHT) || CANVAS_HEIGHT;
+    canvas.width = CANVAS_WIDTH;
+    canvas.height = CANVAS_HEIGHT;
+    document.title = project.name;
+
+    layers = [];
+    for (const storedLayer of project.layers || []) {
+        const layer = [];
+        for (const storedClip of storedLayer) {
+            const clip = new Clip(storedClip.start, storedClip.duration, storedClip.layerIndex);
+            if (storedClip.image) {
+                await bufferToCanvas(storedClip.image, clip.ctx, CANVAS_WIDTH, CANVAS_HEIGHT);
+            }
+            layer.push(clip);
+        }
+        layers.push(layer);
+    }
+    while (layers.length < 1) layers.push([]);
+    currentFrame = Number(project.currentFrame) || 0;
+    onion = project.onion !== false;
+    onionNext = project.onionNext === true;
+    minVisibleFrames = Number(project.minVisibleFrames) || MIN_VISIBLE_FRAMES;
+    pxPerFrame = Number(project.pxPerFrame) || MAX_PX_PER_FRAME;
+}
 
 function updateAnimationMinWidth() {
     if (!editorContainer || !animationContainer) return;
@@ -305,6 +426,7 @@ function buildTimeline(force = false) {
             setSelectedClip(clip);
             render();
             buildTimeline(true);
+            scheduleSave();
         });
 
         grid.appendChild(row);
@@ -473,6 +595,7 @@ function endClipDrag() {
     window.removeEventListener("mousemove", onClipDrag);
     window.removeEventListener("mouseup", endClipDrag);
     dragState = null;
+    scheduleSave();
 }
 
 function getCanvasPos(e) {
@@ -505,6 +628,7 @@ function undo() {
     applyImage(activeClip, prev);
     render();
     refreshAllPreviews();
+    scheduleSave();
 }
 
 function redo() {
@@ -515,6 +639,7 @@ function redo() {
     applyImage(activeClip, next);
     render();
     refreshAllPreviews();
+    scheduleSave();
 }
 
 canvas.addEventListener("mousedown", e => {
@@ -598,6 +723,7 @@ window.addEventListener("mouseup", () => {
         pushUndo(activeClip, drawSnapshot);
         drawSnapshot = null;
         refreshAllPreviews();
+        scheduleSave();
     }
     drawing = false;
 });
@@ -712,6 +838,7 @@ function cutClipContent() {
     activeClip.ctx.clearRect(0, 0, canvas.width, canvas.height);
     render();
     refreshAllPreviews();
+    scheduleSave();
 }
 
 function pasteClipContent() {
@@ -720,6 +847,7 @@ function pasteClipContent() {
     applyImage(activeClip, clipboardImage);
     render();
     refreshAllPreviews();
+    scheduleSave();
 }
 
 function deleteClipDrawing() {
@@ -728,6 +856,7 @@ function deleteClipDrawing() {
     activeClip.ctx.clearRect(0, 0, canvas.width, canvas.height);
     render();
     refreshAllPreviews();
+    scheduleSave();
 }
 
 function deleteSelectedClip() {
@@ -752,6 +881,7 @@ function deleteSelectedClip() {
     buildTimeline(true);
     render();
     refreshAllPreviews();
+    scheduleSave();
 }
 
 function splitSelectedClip() {
@@ -775,6 +905,7 @@ function splitSelectedClip() {
 
     buildTimeline(true);
     setSelectedClip(newClip, false);
+    scheduleSave();
 }
 
 function setTool(nextTool) {
@@ -963,6 +1094,7 @@ onionBtn.addEventListener("click", () => {
     onionClickTimer = setTimeout(() => {
         onion = !onion;
         render();
+        scheduleSave();
         onionClickTimer = null;
     }, 220);
 });
@@ -975,6 +1107,7 @@ onionBtn.addEventListener("dblclick", e => {
     }
     onionNext = !onionNext;
     render();
+    scheduleSave();
 });
 
 if (playBtn) playBtn.addEventListener("click", togglePlayPause);
@@ -1012,6 +1145,7 @@ if (pasteClipBtn) {
         layer.sort((a, b) => a.start - b.start);
         buildTimeline(true);
         setSelectedClip(newClip, false);
+        scheduleSave();
     });
 }
 if (deleteClipBtn) deleteClipBtn.addEventListener("click", deleteSelectedClip);
@@ -1019,6 +1153,7 @@ if (addFramesBtn) {
     addFramesBtn.addEventListener("click", () => {
         minVisibleFrames += 10;
         buildTimeline(true);
+        scheduleSave();
     });
 }
 
@@ -1044,6 +1179,7 @@ if (addLayerBtn) {
     addLayerBtn.addEventListener("click", () => {
         layers.push([]);
         buildTimeline(true);
+        scheduleSave();
     });
 }
 
@@ -1078,6 +1214,10 @@ window.addEventListener("keydown", e => {
         e.preventDefault();
         deleteClipDrawing();
     }
+    if (e.ctrlKey && key === "s") {
+        e.preventDefault();
+        saveCurrentProject();
+    }
 });
 
 window.addEventListener("keyup", e => {
@@ -1088,22 +1228,35 @@ window.addEventListener("keyup", e => {
     }
 });
 
-//initial setup
-setupToolPanel(pencilBtn, "pencil");
-setupToolPanel(eraserBtn, "eraser");
+async function initializeEditor() {
+    setupToolPanel(pencilBtn, "pencil");
+    setupToolPanel(eraserBtn, "eraser");
 
-layers[0].push(new Clip(0, 1, 0));
+    if (projectId) {
+        try {
+            await restoreProject();
+        } catch (error) {
+            console.error(error);
+        }
+    }
 
-updateAnimationMinWidth();
-defaultCanvasScale = getDefaultCanvasScale();
-canvasScale = defaultCanvasScale;
-panX = 0;
-panY = 0;
-applyCanvasTransform();
-centerCanvasInContainer();
-updateZoomLabel();
+    if (!layers.some(layer => layer.length)) {
+        layers[0].push(new Clip(0, 1, 0));
+    }
 
-buildTimeline(true);
-setSelectedClip(layers[0][0]);
-updateDurationLabel();
-render();
+    updateAnimationMinWidth();
+    defaultCanvasScale = getDefaultCanvasScale();
+    canvasScale = defaultCanvasScale;
+    panX = 0;
+    panY = 0;
+    applyCanvasTransform();
+    centerCanvasInContainer();
+    updateZoomLabel();
+    buildTimeline(true);
+    setSelectedClip(layers[0][0]);
+    updateDurationLabel();
+    render();
+    scheduleSave();
+}
+
+initializeEditor();

@@ -43,6 +43,14 @@
         flex-shrink: 0;
         height: 150px;
         position: relative;
+        overflow: hidden;
+    }
+
+    .thumbnail img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        display: block;
     }
 
     .thumbnail:hover{
@@ -139,7 +147,7 @@
 </style>
 
 <div class="project-card">
-    <div class="thumbnail"></div>
+    <div class="thumbnail" aria-label="Project thumbnail"></div>
     <div class="infos">
         <div class="main-info">
             <div class="project-name">Project Name</div>

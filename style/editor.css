@@ -1,27 +1,28 @@
 /* Editor styles */
 :root {
-  --bg: #fff8f4;
-  --card: #fff3ca;
-  --accent: #ffc271;
-  --text: #000;
-  --color-bg1: rgb(243, 246, 255);
-  --color-bg2: rgb(255, 245, 252);
-  --color1: 88, 128, 235;
-  --color2: 140, 102, 225;
-  --color3: 232, 146, 198;
-  --color4: 232, 174, 118;
-  --color5: 242, 220, 170;
-  --color-interactive: 110, 150, 235;
-  --circle-size: 78%;
+  --bg: #fffaeb;
+  --card: #ffc271;
+  --accent: #ffd6dd;
+  --text: #311914;
+  --color-bg1: rgb(160, 51, 255);
+  --color-bg2: rgb(255, 224, 240);
+  --color1: 70, 140, 255;
+  --color2: 160, 90, 255;
+  --color3: 255, 140, 205;
+  --color4: 255, 190, 120;
+  --color5: 255, 230, 140;
+  --color-interactive: 165, 95, 255;
+  --color-interactive-alt: 90, 160, 255;
+  --circle-size: 74%;
   --blending: soft-light;
-  --gradient-opacity: 0.48;
-  --accent-size: 45%;
-  --accent-opacity: 0.45;
+  --gradient-opacity: 0.58;
+  --accent-size: 40%;
+  --accent-opacity: 0.55;
 }
 
 body.dark {
   --bg: #02133b;
-  --card: #1A3F99;
+  --card: #200360;
   --accent: #98e5ff;
   --text: #fff;
   --color-bg1: rgb(8, 12, 40);
@@ -31,11 +32,12 @@ body.dark {
   --color3: 210, 120, 185;
   --color4: 210, 150, 95;
   --color5: 220, 200, 120;
-  --color-interactive: 100, 130, 225;
-  --circle-size: 82%;
+  --color-interactive: 169, 112, 255;
+  --color-interactive-alt: 90, 140, 255;
+  --circle-size: 76%;
   --blending: soft-light;
   --gradient-opacity: 0.62;
-  --accent-size: 42%;
+  --accent-size: 38%;
   --accent-opacity: 0.42;
 }
 
@@ -159,7 +161,7 @@ footer .video-settings {
   display: flex;
   justify-content: space-between;
   padding: 5px;
-  background-color: #A970FF;
+  background-color: #6c5ce7;
 }
 footer .video-settings .playControls > * {
   width: 25px;

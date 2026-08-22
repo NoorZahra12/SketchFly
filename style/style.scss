@@ -1,7 +1,9 @@
 @use 'util/variables';
 @use 'util/keyframes';
 @use 'util/mixins';
-// @use 'util';
+@use 'pages/settings';
+@use "sass:color";
+
 
 // ========== GLOBAL STYLES ==========
 * {
@@ -66,10 +68,11 @@ body {
                 transition: linear 0.2s;
                 filter: drop-shadow(0 0 5px var(--bg));
             }
-            
+
             &:hover {
                 cursor: pointer;
                 transform: translateY(-1.5px);
+
                 h1 {
                     transition: linear 0.2s;
                     color: variables.$primary;
@@ -82,7 +85,6 @@ body {
             display: inline-flex;
             align-items: center;
             justify-content: right;
-            // background-color: inherit;
 
             @include mixins.media('mobile') {
                 justify-content: space-evenly;
@@ -108,6 +110,11 @@ body {
                 overflow: hidden;
                 position: relative;
 
+                &:hover {
+                    // background: rgb(($variables.$bg))/ 40%);
+                    background: rgba(var(--bg), 0.9);
+                }
+
                 @include mixins.media('mobile') {
                     flex-direction: column;
                     flex: 1;
@@ -124,12 +131,6 @@ body {
                     @include mixins.media('mobile') {
                         z-index: 5;
                     }
-                }
-
-                &:hover>* {
-                    color: variables.$primary;
-                    transform: translateY(-2px);
-                    transition: linear 0.2s;
                 }
 
                 &::after {
@@ -153,6 +154,11 @@ body {
                         top: -2px;
                         bottom: auto;
                     }
+                }
+
+                &:hover>* {
+                    transform: translateY(-2px);
+                    transition: linear 0.2s;
                 }
             }
         }
@@ -449,13 +455,16 @@ body:not(.dark) {
     z-index: 1000;
     letter-spacing: 0.3px;
     color: #fff;
-    background: linear-gradient(90deg, variables.$primary 30%, lighten(variables.$primary, 10%) 100%);
+    background: linear-gradient(90deg,
+            variables.$primary 30%,
+            color.scale(variables.$primary, $lightness: 27.2727272727%) 100%);
     box-shadow: 0 8px 20px rgba(variables.$primary, 0.35);
     cursor: pointer;
     user-select: none;
     position: relative;
     overflow: hidden;
-    border: 2px solid variables.$primary;
+    border: 5px solid var(--bg);
+    border: none;
     transition:
         transform 0.2s ease,
         box-shadow 0.2s ease,
@@ -482,9 +491,10 @@ body:not(.dark) {
         border-radius: 50%;
         background: #fff;
         transform: translate(-50%, -50%);
-        transition: width 0.9s ease, height 0.9s ease, opacity 0.9s ease;
+        transition: width 0.9s ease, height 0.9s ease, opacity 0.0s ease;
         z-index: -1;
         opacity: 0.8;
+        filter: blur(5px);
     }
 
     &:hover .cta-ripple {
@@ -532,13 +542,12 @@ body:not(.dark) {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 5px;
     text-align: center;
+    gap: 20px;
 
     h1 {
         font-family: "Parisienne", cursive;
         font-size: 6.5vw;
-        letter-spacing: 1px;
 
         @include mixins.media('mobile') {
             font-size: 30px;
@@ -551,7 +560,6 @@ body:not(.dark) {
 
     p {
         font-size: clamp(0.95rem, 0.7vw + 0.75rem, 1.2rem);
-        margin: 10px 0 20px 0;
 
         @include mixins.media('mobile') {
             font-size: 18px;
