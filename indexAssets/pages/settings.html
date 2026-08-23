@@ -3,25 +3,6 @@
 <!-- ========== SECTION (component root) ========== -->
 <section class="settings-component" role="region" aria-label="Settings">
 
-    <!-- Language -->
-    <div class="setting-row">
-        <span class="setting-label" id="lang-label">Language</span>
-        <select aria-labelledby="lang-label" aria-description="Select your preferred language">
-            <option value="en">🇬🇧 English</option>
-            <option value="es">🇪🇸 Español</option>
-            <option value="fr">🇫🇷 Français</option>
-            <option value="de">🇩🇪 Deutsch</option>
-            <option value="it">🇮🇹 Italiano</option>
-            <option value="pt">🇵🇹 Português</option>
-            <option value="ru">🇷🇺 Русский</option>
-            <option value="ja">🇯🇵 日本語</option>
-            <option value="ko">🇰🇷 한국어</option>
-            <option value="zh">🇨🇳 中文</option>
-            <option value="ar">🇸🇦 العربية</option>
-            <option value="hi">🇮🇳 हिन्दी</option>
-        </select>
-    </div>
-
     <!-- Theme (switch) -->
     <div class="setting-row theme-row">
         <span class="theme-text" id="theme-label">Appearance</span>
@@ -30,62 +11,63 @@
         </button>
     </div>
 
-    <!-- Font size (integer only) -->
+    <!-- Font size -->
     <div class="setting-row">
         <span class="setting-label" id="fontsize-label">Font size</span>
-        <div style="display:flex; align-items:center; gap:0.3rem;">
-            <input type="number" min="8" max="32" value="16" step="1" aria-labelledby="fontsize-label"
-                aria-description="Font size in pixels, between 8 and 32">
-            <span style="opacity:0.5; font-size:0.8rem;">px</span>
-        </div>
+        <select id="font-size-select" aria-labelledby="fontsize-label">
+            <option value="small">Small</option>
+            <option value="medium">Medium</option>
+            <option value="large">Large</option>
+            <option value="extra-large">Extra large</option>
+        </select>
     </div>
 
     <!-- Layout display (flexbox grid preview) -->
-    <div class="setting-row">
-        <span class="setting-label" id="layout-label">Layout display</span>
-        <div class="layout-preview" role="radiogroup" aria-labelledby="layout-label">
+    <!-- <div class="setting-row"> -->
+        <!-- <span class="setting-label" id="layout-label">Layout display</span> -->
+        <!-- <div class="layout-preview" role="radiogroup" aria-labelledby="layout-label"> -->
 
             <!-- Grid view -->
-            <button class="layout-btn active" role="radio" aria-checked="true" aria-label="Grid view">
-                <span class="layout-icon grid" aria-hidden="true">
-                    <span class="row"><span class="cell"></span><span class="cell"></span></span>
-                    <span class="row"><span class="cell"></span><span class="cell"></span></span>
-                </span>
-                Grid
-            </button>
+            <!-- <button class="layout-btn active" role="radio" aria-checked="true" aria-label="Grid view"> -->
+                <!-- <span class="layout-icon grid" aria-hidden="true"> -->
+                    <!-- <span class="row"><span class="cell"></span><span class="cell"></span></span> -->
+                    <!-- <span class="row"><span class="cell"></span><span class="cell"></span></span> -->
+                <!-- </span> -->
+                <!-- Grid -->
+            <!-- </button> -->
 
             <!-- Vertical view -->
-            <button class="layout-btn" role="radio" aria-checked="false" aria-label="Vertical view">
-                <span class="layout-icon vertical" aria-hidden="true">
-                    <span class="cell"></span>
-                    <span class="cell"></span>
-                    <span class="cell"></span>
-                </span>
-                Vertical
-            </button>
+            <!-- <button class="layout-btn" role="radio" aria-checked="false" aria-label="Vertical view"> -->
+                <!-- <span class="layout-icon vertical" aria-hidden="true"> -->
+                    <!-- <span class="cell"></span> -->
+                    <!-- <span class="cell"></span> -->
+                    <!-- <span class="cell"></span> -->
+                <!-- </span> -->
+                <!-- Vertical -->
+            <!-- </button> -->
 
             <!-- Text only view -->
-            <button class="layout-btn" role="radio" aria-checked="false" aria-label="Text only view">
-                <span class="layout-icon text-only" aria-hidden="true">
-                    <span class="cell"></span>
-                    <span class="cell"></span>
-                    <span class="cell" style="width:60%;"></span>
-                </span>
-                Text
-            </button>
+            <!-- <button class="layout-btn" role="radio" aria-checked="false" aria-label="Text only view"> -->
+                <!-- <span class="layout-icon text-only" aria-hidden="true"> -->
+                    <!-- <span class="cell"></span> -->
+                    <!-- <span class="cell"></span> -->
+                    <!-- <span class="cell" style="width:60%;"></span> -->
+                <!-- </span> -->
+                <!-- Text -->
+            <!-- </button> -->
 
             <!-- Compact view -->
-            <button class="layout-btn" role="radio" aria-checked="false" aria-label="Compact view">
-                <span class="layout-icon" aria-hidden="true" style="flex-direction:row; height:12px;">
-                    <span class="cell" style="height:6px;"></span>
-                    <span class="cell" style="height:6px;"></span>
-                    <span class="cell" style="height:6px;"></span>
-                </span>
-                Compact
-            </button>
+            <!-- <button class="layout-btn" role="radio" aria-checked="false" aria-label="Compact view"> -->
+                <!-- <span class="layout-icon" aria-hidden="true" style="flex-direction:row; height:12px;"> -->
+                    <!-- <span class="cell" style="height:6px;"></span> -->
+                    <!-- <span class="cell" style="height:6px;"></span> -->
+                    <!-- <span class="cell" style="height:6px;"></span> -->
+                <!-- </span> -->
+                <!-- Compact -->
+            <!-- </button> -->
 
-        </div>
-    </div>
+        <!-- </div> -->
+    <!-- </div> -->
 
     <!-- Tutorial -->
     <!-- <div class="setting-row tutorial-row">

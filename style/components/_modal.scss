@@ -1,0 +1,75 @@
+.project-settings {
+    box-sizing: border-box;
+    position: relative;
+    width: 356px;
+    padding: 2rem;
+    border-radius: 8px;
+    background: var(--surface, #fff);
+    color: black;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+
+    h2 {
+        margin: 0 0 1.5rem;
+        font-size: 1.5rem;
+    }
+
+    section {
+        margin-bottom: 1.5rem;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+    }
+
+    input {
+        width: 100%;
+        padding: 0.6rem;
+        border: 1px solid rgba(0, 0, 0, 0.2);
+        border-radius: 6px;
+        background: transparent;
+        color: inherit;
+        font-size: 1rem;
+
+        &:focus {
+            outline: 2px solid #6c5ce7;
+            outline-offset: 1px;
+        }
+    }
+
+    .close-btn {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        width: 2rem;
+        height: 2rem;
+        border: 0;
+        background: transparent;
+        color: inherit;
+        font-size: 1.5rem;
+        cursor: pointer;
+    }
+
+    .canvas-inputs,
+    .fps-input {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+
+        input {
+            flex: 1;
+        }
+    }
+
+    .make-project {
+        display: block;
+        margin: 1rem auto 0;
+        padding: 0.8rem 2rem;
+        border: 0;
+        border-radius: 6px;
+        background: #6c5ce7;
+        color: #fff;
+        cursor: pointer;
+    }
+}

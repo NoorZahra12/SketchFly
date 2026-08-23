@@ -297,6 +297,327 @@ body.dark {
   }
 }
 
+.project-card {
+  box-sizing: border-box;
+  position: relative;
+  width: min(100%, 320px);
+  min-width: 0;
+  flex: 1 1 280px;
+  max-width: 360px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  overflow: visible;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--bg) 50%, transparent);
+  box-shadow: 0 18px 40px rgba(6, 14, 40, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(22px) saturate(150%);
+  -webkit-backdrop-filter: blur(22px) saturate(150%);
+}
+body:not(.dark) .project-card {
+  background: color-mix(in srgb, var(--bg) 60%, transparent);
+  border-color: rgba(120, 140, 200, 0.18);
+  box-shadow: 0 14px 30px rgba(90, 120, 180, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(16px) saturate(120%);
+  -webkit-backdrop-filter: blur(16px) saturate(120%);
+}
+.project-card .thumbnail {
+  width: 100%;
+  aspect-ratio: 16/9;
+  height: auto;
+  position: relative;
+  overflow: hidden;
+  align-self: stretch;
+  background: color-mix(in srgb, var(--bg) 35%, transparent);
+  border-radius: 4px;
+  cursor: pointer;
+}
+.project-card .thumbnail img {
+  width: 100%;
+  height: 100%;
+  -o-object-fit: contain;
+     object-fit: contain;
+  display: block;
+}
+.project-card .infos {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-self: stretch;
+}
+.project-card .infos .main-info {
+  display: flex;
+  align-items: flex-start;
+  align-self: stretch;
+  gap: 8px;
+}
+.project-card .infos .project-name {
+  color: var(--text);
+  flex: 1;
+}
+.project-card .infos .starred {
+  width: 22px;
+  height: 22px;
+  border: 0;
+  background: none;
+  color: var(--text);
+  cursor: pointer;
+}
+.project-card .infos .starred svg {
+  width: 100%;
+  height: 100%;
+}
+.project-card .infos .starred.is-starred svg {
+  fill: currentColor;
+}
+.project-card .infos .round {
+  position: static;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.project-card .infos .round .project-menu-button {
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  border: 1px solid color-mix(in srgb, var(--text) 28%, transparent);
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--bg, #fff) 65%, transparent);
+  color: var(--text);
+  font-size: 1rem;
+  line-height: 1;
+}
+.project-card .infos .round .project-menu-button:hover, .project-card .infos .round .project-menu-button:focus-visible {
+  border-color: var(--accent);
+  cursor: pointer;
+  outline: none;
+}
+.project-card .infos .project-menu {
+  position: absolute;
+  right: 20px;
+  bottom: 30%;
+  z-index: 5;
+  display: grid;
+  gap: 4px;
+  min-width: 110px;
+  padding: 6px;
+  border: 1px solid rgba(128, 128, 128, 0.25);
+  border-radius: 6px;
+  background: var(--bg);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+.project-card .infos .project-menu[hidden] {
+  display: none;
+}
+.project-card .infos .project-menu button {
+  padding: 7px 10px;
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+}
+.project-card .infos .project-menu button:hover {
+  background: var(--accent);
+  border-radius: 4px;
+}
+.project-card .infos .extra-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  align-self: stretch;
+  gap: 12px;
+  min-width: 0;
+}
+
+.video-player {
+  box-sizing: border-box;
+  width: min(100%, 320px);
+  flex: 1 1 280px;
+  max-width: 360px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--bg) 50%, transparent);
+  box-shadow: 0 18px 40px rgba(6, 14, 40, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(22px) saturate(150%);
+  -webkit-backdrop-filter: blur(22px) saturate(150%);
+}
+body:not(.dark) .video-player {
+  background: color-mix(in srgb, var(--bg) 60%, transparent);
+  border-color: rgba(120, 140, 200, 0.18);
+  box-shadow: 0 14px 30px rgba(90, 120, 180, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(16px) saturate(120%);
+  -webkit-backdrop-filter: blur(16px) saturate(120%);
+}
+.video-player .player {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 272/163;
+  -o-object-fit: contain;
+     object-fit: contain;
+  background: rgba(var(--bg), 0.5);
+  border-radius: 4px;
+  cursor: pointer;
+}
+.video-player .infos {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-self: stretch;
+}
+.video-player .infos .main-info {
+  display: flex;
+  align-items: flex-start;
+  align-self: stretch;
+  gap: 8px;
+}
+.video-player .infos .main-info .project-name {
+  color: var(--text);
+  flex: 1;
+}
+.video-player .infos .main-info ._00-00 {
+  color: var(--text);
+  font-size: 0.85rem;
+}
+.video-player .infos .export-actions {
+  display: flex;
+  gap: 8px;
+}
+.video-player .infos .export-actions button {
+  padding: 7px 10px;
+  border: 1px solid skyblue;
+  border-radius: 5px;
+  background: color-mix(in srgb, var(--bg) 50%, transparent);
+  color: var(--text);
+  cursor: pointer;
+}
+.video-player .infos .export-actions button:hover {
+  background-color: blueviolet;
+  color: white;
+  border: none;
+}
+
+.project-settings {
+  box-sizing: border-box;
+  position: relative;
+  width: 356px;
+  padding: 2rem;
+  border-radius: 8px;
+  background: var(--surface, #fff);
+  color: black;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+.project-settings h2 {
+  margin: 0 0 1.5rem;
+  font-size: 1.5rem;
+}
+.project-settings section {
+  margin-bottom: 1.5rem;
+}
+.project-settings label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+.project-settings input {
+  width: 100%;
+  padding: 0.6rem;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-radius: 6px;
+  background: transparent;
+  color: inherit;
+  font-size: 1rem;
+}
+.project-settings input:focus {
+  outline: 2px solid #6c5ce7;
+  outline-offset: 1px;
+}
+.project-settings .close-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 2rem;
+  height: 2rem;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+.project-settings .canvas-inputs,
+.project-settings .fps-input {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.project-settings .canvas-inputs input,
+.project-settings .fps-input input {
+  flex: 1;
+}
+.project-settings .make-project {
+  display: block;
+  margin: 1rem auto 0;
+  padding: 0.8rem 2rem;
+  border: 0;
+  border-radius: 6px;
+  background: #6c5ce7;
+  color: #fff;
+  cursor: pointer;
+}
+
+.layer {
+  box-sizing: border-box;
+  position: relative;
+  width: 122px;
+  height: 138px;
+}
+.layer .bg {
+  position: absolute;
+  inset: 0;
+  background: #fff;
+  border: 2px solid #000;
+  border-radius: 6px;
+}
+.layer .thumbnail {
+  position: absolute;
+  inset: 0 0 20%;
+  background: #fff;
+  border-bottom: 1px solid #000;
+}
+.layer .layer-name {
+  position: absolute;
+  bottom: 5px;
+  width: 100%;
+  text-align: center;
+}
+.layer .transparency-eye {
+  position: absolute;
+  left: 7px;
+  top: 5px;
+  width: 20px;
+  height: 24px;
+  -o-object-fit: cover;
+     object-fit: cover;
+}
+.layer .rectangle-39871 {
+  position: absolute;
+  left: 7px;
+  top: 77px;
+  width: 21px;
+  height: 28px;
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -307,12 +628,12 @@ body.dark {
 body {
   background: var(--bg);
   color: var(--text);
+  font-size: var(--app-font-size, 16px);
   transition: background-color 0.3s, color 0.3s;
   overflow-y: hidden;
   display: flex;
   flex-direction: column;
   height: 100vh;
-  background: var(--bg);
 }
 body.dark {
   background: var(--bg);
@@ -372,7 +693,6 @@ body header nav {
     position: fixed;
     bottom: 0;
     left: 0;
-    border-top: 1px solid rgba(128, 128, 128, 0.49);
     width: 100vw;
   }
 }
@@ -443,9 +763,6 @@ body main {
   display: flex;
   background-color: none;
 }
-body main .scroller {
-  padding: 10px 0 50px 0;
-}
 @media (max-width: 600px) {
   body main {
     margin-bottom: 72px;
@@ -457,12 +774,13 @@ body main::-webkit-scrollbar {
 }
 body main .scroller {
   display: flex;
+  width: 100%;
   justify-content: center;
   flex-wrap: wrap;
   gap: 10px;
   height: -moz-fit-content;
   height: fit-content;
-  padding: 10px;
+  padding: 10px 10px 50px 10px;
 }
 
 body:not(.dark) header .logo img {
@@ -697,7 +1015,7 @@ body:not(.dark) header .logo img {
 }
 
 .cta-animate {
-  position: absolute;
+  position: fixed;
   right: 20px;
   bottom: 30px;
   z-index: 20;
@@ -710,6 +1028,11 @@ body:not(.dark) header .logo img {
   width: max-content;
   max-width: calc(100vw - 40px);
   pointer-events: auto;
+}
+@media (max-width: 600px) {
+  .cta-animate {
+    bottom: 90px;
+  }
 }
 
 #default-section {

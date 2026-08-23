@@ -1,4 +1,4 @@
-import { bufferToCanvas, canvasToBuffer, loadProject, saveProject } from "../projects.js";
+import { bufferToCanvas, canvasToBuffer, loadProject, saveProject, saveExport, updateProjectMeta } from "../projects.js";
 
 const urlParams = new URLSearchParams(window.location.search);
 const projectId = urlParams.get('id');
@@ -54,6 +54,11 @@ const fpsGridContainer = document.querySelector(".fpsGridContainer");
 const playhead = document.querySelector(".currentfpsIndicator");
 const editorContainer = document.querySelector(".editorContainer");
 const editingPanel = document.querySelector(".editingPanel");
+const panelResizeHandle = document.querySelector(".panel-resize-handle");
+const projectSettingsBtn = document.getElementById("project-settings-btn");
+const exportVideoBtn = document.getElementById("export-video-btn");
+const mediaImport = document.getElementById("media-import");
+const transformTool = document.getElementById("transform-tool");
 
 // styling here in case i need to add js within style if it makes sense. these aren't in editor.html, only here in js
 const injectedStyle = document.createElement("style");
@@ -105,10 +110,11 @@ const toolSettings = {
 
 //Clip class to represent each clip in the timeline
 class Clip {
-    constructor(start, duration = 1, layerIndex = 0) {
+    constructor(start, duration = 1, layerIndex = 0, media = null) {
         this.start = start;
         this.duration = duration;
         this.layerIndex = layerIndex;
+        this.media = media;
         this.canvas = document.createElement("canvas");
         this.canvas.width = canvas.width;
         this.canvas.height = canvas.height;
@@ -151,6 +157,40 @@ let project = null;
 let saveTimer = null;
 let saveInProgress = false;
 let saveRequested = false;
+let transformMode = false;
+let transformState = null;
+let panelResizeState = null;
+const clipUndoStack = [];
+const clipRedoStack = [];
+
+function captureClipState() {
+    return layers.map(layer => layer.map(clip => ({
+        start: clip.start,
+        duration: clip.duration,
+        layerIndex: clip.layerIndex,
+        media: clip.media,
+        image: clip.ctx.getImageData(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT)
+    })));
+}
+
+function restoreClipState(state) {
+    layers = state.map(layer => layer.map(savedClip => {
+        const clip = new Clip(savedClip.start, savedClip.duration, savedClip.layerIndex, savedClip.media);
+        clip.ctx.putImageData(savedClip.image, 0, 0);
+        return clip;
+    }));
+    activeClip = null;
+    buildTimeline(true);
+    render();
+    refreshAllPreviews();
+    updateDurationLabel();
+}
+
+function pushClipHistory() {
+    clipUndoStack.push(captureClipState());
+    if (clipUndoStack.length > MAX_UNDO) clipUndoStack.shift();
+    clipRedoStack.length = 0;
+}
 
 async function serializeProject() {
     const serializedLayers = [];
@@ -166,7 +206,8 @@ async function serializeProject() {
                 start: clip.start,
                 duration: clip.duration,
                 layerIndex: clip.layerIndex,
-                image
+                image,
+                media: clip.media
             });
             durationFrames = Math.max(durationFrames, clip.end());
         }
@@ -248,7 +289,7 @@ async function restoreProject() {
     for (const storedLayer of project.layers || []) {
         const layer = [];
         for (const storedClip of storedLayer) {
-            const clip = new Clip(storedClip.start, storedClip.duration, storedClip.layerIndex);
+            const clip = new Clip(storedClip.start, storedClip.duration, storedClip.layerIndex, storedClip.media || null);
             if (storedClip.image) {
                 await bufferToCanvas(storedClip.image, clip.ctx, CANVAS_WIDTH, CANVAS_HEIGHT);
             }
@@ -269,6 +310,23 @@ function updateAnimationMinWidth() {
     const panelWidth = editingPanel ? editingPanel.offsetWidth : 0;
     const available = Math.max(0, editorContainer.clientWidth - panelWidth);
     animationContainer.style.minWidth = `${available}px`;
+}
+
+function resizeEditingPanel(event) {
+    if (!panelResizeState || !editingPanel) return;
+    const maxWidth = Math.min(window.innerWidth * 0.45, 360);
+    const width = Math.max(90, Math.min(maxWidth, panelResizeState.width - (event.clientX - panelResizeState.startX)));
+    editingPanel.style.width = `${width}px`;
+    editingPanel.style.minWidth = `${width}px`;
+    editingPanel.style.maxWidth = `${width}px`;
+    editingPanel.style.flexBasis = `${width}px`;
+    updateAnimationMinWidth();
+}
+
+function stopResizeEditingPanel() {
+    panelResizeState = null;
+    window.removeEventListener('pointermove', resizeEditingPanel);
+    window.removeEventListener('pointerup', stopResizeEditingPanel);
 }
 
 function updateLayerCountLabel() {
@@ -338,10 +396,11 @@ function getTimelineFrames() {
 
 function updateDurationLabel() {
     if (!timeLabel) return;
-    const totalSeconds = Math.floor(getMaxEndFrame() / FPS);
-    const curSeconds = Math.floor(currentFrame / FPS);
-    const format = s => `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
-    timeLabel.textContent = `${format(curSeconds)}/${format(totalSeconds)}`;
+    const format = frame => {
+        const seconds = frame / FPS;
+        return `${String(Math.floor(seconds / 60)).padStart(2, "0")}:${(seconds % 60).toFixed(2).padStart(5, "0")}`;
+    };
+    timeLabel.textContent = `${format(currentFrame)}/${format(getMaxEndFrame())}`;
 }
 
 function updateRowWidths() {
@@ -421,6 +480,7 @@ function buildTimeline(force = false) {
             const frame = Math.floor(x / pxPerFrame);
             const clip = new Clip(frame, 1, index);
             if (overlaps(layer, clip)) return;
+            pushClipHistory();
             layer.push(clip);
             createClipDOM(clip, row);
             setSelectedClip(clip);
@@ -488,6 +548,84 @@ function updateClipHighlights() {
             clip.dom.classList.toggle("selected", clip === activeClip);
         });
     });
+    updateTransformOverlay();
+}
+
+function getClipBounds(clip) {
+    const pixels = clip.ctx.getImageData(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT).data;
+    let left = CANVAS_WIDTH, top = CANVAS_HEIGHT, right = 0, bottom = 0;
+    for (let y = 0; y < CANVAS_HEIGHT; y++) {
+        for (let x = 0; x < CANVAS_WIDTH; x++) {
+            if (pixels[(y * CANVAS_WIDTH + x) * 4 + 3] > 0) {
+                left = Math.min(left, x); top = Math.min(top, y);
+                right = Math.max(right, x + 1); bottom = Math.max(bottom, y + 1);
+            }
+        }
+    }
+    if (right <= left || bottom <= top) return { left: 0, top: 0, right: CANVAS_WIDTH, bottom: CANVAS_HEIGHT };
+    return { left, top, right, bottom };
+}
+
+function updateTransformOverlay() {
+    const oldOverlay = container?.querySelector('.transform-overlay');
+    if (oldOverlay) oldOverlay.remove();
+    if (!transformMode || !activeClip || !container) return;
+    const bounds = getClipBounds(activeClip);
+    const canvasRect = canvas.getBoundingClientRect();
+    const containerRect = container.getBoundingClientRect();
+    const scaleX = canvasRect.width / CANVAS_WIDTH;
+    const scaleY = canvasRect.height / CANVAS_HEIGHT;
+    const overlay = document.createElement('div');
+    overlay.className = 'transform-overlay';
+    overlay.style.left = `${canvasRect.left - containerRect.left + bounds.left * scaleX}px`;
+    overlay.style.top = `${canvasRect.top - containerRect.top + bounds.top * scaleY}px`;
+    overlay.style.width = `${(bounds.right - bounds.left) * scaleX}px`;
+    overlay.style.height = `${(bounds.bottom - bounds.top) * scaleY}px`;
+    ['nw', 'n', 'ne', 'e', 'se', 's', 'sw', 'w'].forEach(position => {
+        const handle = document.createElement('button');
+        handle.type = 'button';
+        handle.className = `transform-handle ${position}`;
+        handle.setAttribute('aria-label', `Resize ${position}`);
+        handle.addEventListener('pointerdown', event => startTransform(event, position, bounds));
+        overlay.appendChild(handle);
+    });
+    container.appendChild(overlay);
+}
+
+function startTransform(event, position, bounds) {
+    event.preventDefault();
+    event.stopPropagation();
+    pushClipHistory();
+    transformState = { position, bounds, startX: event.clientX, startY: event.clientY, image: activeClip.canvas };
+    window.addEventListener('pointermove', updateTransform);
+    window.addEventListener('pointerup', endTransform, { once: true });
+}
+
+function updateTransform(event) {
+    if (!transformState || !activeClip) return;
+    const rect = canvas.getBoundingClientRect();
+    const dx = (event.clientX - transformState.startX) * CANVAS_WIDTH / rect.width;
+    const dy = (event.clientY - transformState.startY) * CANVAS_HEIGHT / rect.height;
+    const next = { ...transformState.bounds };
+    if (transformState.position.includes('w')) next.left = Math.min(next.right - 2, next.left + dx);
+    if (transformState.position.includes('e')) next.right = Math.max(next.left + 2, next.right + dx);
+    if (transformState.position.includes('n')) next.top = Math.min(next.bottom - 2, next.top + dy);
+    if (transformState.position.includes('s')) next.bottom = Math.max(next.top + 2, next.bottom + dy);
+    const source = document.createElement('canvas');
+    source.width = CANVAS_WIDTH; source.height = CANVAS_HEIGHT;
+    source.getContext('2d').drawImage(transformState.image, 0, 0);
+    activeClip.ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+    activeClip.ctx.drawImage(source, transformState.bounds.left, transformState.bounds.top,
+        transformState.bounds.right - transformState.bounds.left, transformState.bounds.bottom - transformState.bounds.top,
+        next.left, next.top, next.right - next.left, next.bottom - next.top);
+    render();
+    updateTransformOverlay();
+}
+
+function endTransform() {
+    window.removeEventListener('pointermove', updateTransform);
+    transformState = null;
+    scheduleSave();
 }
 
 
@@ -521,6 +659,7 @@ function createClipDOM(clip, row) {
 let dragState = null;
 
 function startClipDrag(e, clip, mode) {
+    pushClipHistory();
     dragState = {
         clip,
         mode,
@@ -589,6 +728,7 @@ function onClipDrag(e) {
 
     buildTimeline(true);
     render();
+    updateDurationLabel();
 }
 
 function endClipDrag() {
@@ -621,24 +761,36 @@ function pushUndo(clip, imageData) {
 }
 
 function undo() {
-    if (!activeClip || activeClip.undoStack.length === 0) return;
-    const current = snapshot(activeClip);
-    const prev = activeClip.undoStack.pop();
-    activeClip.redoStack.push(current);
-    applyImage(activeClip, prev);
-    render();
-    refreshAllPreviews();
+    if (activeClip && activeClip.undoStack.length > 0) {
+        const current = snapshot(activeClip);
+        const prev = activeClip.undoStack.pop();
+        activeClip.redoStack.push(current);
+        applyImage(activeClip, prev);
+        render();
+        refreshAllPreviews();
+        scheduleSave();
+        return;
+    }
+    if (clipUndoStack.length === 0) return;
+    clipRedoStack.push(captureClipState());
+    restoreClipState(clipUndoStack.pop());
     scheduleSave();
 }
 
 function redo() {
-    if (!activeClip || activeClip.redoStack.length === 0) return;
-    const current = snapshot(activeClip);
-    const next = activeClip.redoStack.pop();
-    activeClip.undoStack.push(current);
-    applyImage(activeClip, next);
-    render();
-    refreshAllPreviews();
+    if (activeClip && activeClip.redoStack.length > 0) {
+        const current = snapshot(activeClip);
+        const next = activeClip.redoStack.pop();
+        activeClip.undoStack.push(current);
+        applyImage(activeClip, next);
+        render();
+        refreshAllPreviews();
+        scheduleSave();
+        return;
+    }
+    if (clipRedoStack.length === 0) return;
+    clipUndoStack.push(captureClipState());
+    restoreClipState(clipRedoStack.pop());
     scheduleSave();
 }
 
@@ -758,6 +910,84 @@ function render() {
     updateClipHighlights();
 }
 
+async function openProjectSettings() {
+    if (!project) return;
+    const overlay = document.createElement('div');
+    overlay.className = 'editor-modal-overlay';
+    const modal = document.createElement('div');
+    modal.className = 'editor-modal';
+    modal.innerHTML = await (await fetch('indexAssets/components/modal.html')).text();
+    overlay.appendChild(modal);
+    document.body.appendChild(overlay);
+    modal.querySelector('#project-name').value = project.name;
+    modal.querySelector('#canvas-width').value = CANVAS_WIDTH;
+    modal.querySelector('#canvas-height').value = CANVAS_HEIGHT;
+    modal.querySelector('#fps-value').value = FPS;
+    modal.querySelector('#make-project-btn').textContent = 'Save changes';
+    modal.querySelector('#close-btn').addEventListener('click', () => overlay.remove());
+    modal.querySelector('#make-project-btn').addEventListener('click', async () => {
+        await updateProjectMeta(project.id, {
+            name: modal.querySelector('#project-name').value.trim() || project.name,
+            settings: {
+                ...project.settings,
+                CANVAS_WIDTH: Number(modal.querySelector('#canvas-width').value) || CANVAS_WIDTH,
+                CANVAS_HEIGHT: Number(modal.querySelector('#canvas-height').value) || CANVAS_HEIGHT,
+                FPS: Number(modal.querySelector('#fps-value').value) || FPS
+            }
+        });
+        overlay.remove();
+        window.location.reload();
+    });
+}
+
+async function importMedia(file) {
+    const clip = new Clip(getMaxEndFrame(), 1, 0, { name: file.name, type: file.type, blob: file });
+    if (file.type.startsWith('image/')) {
+        await bufferToCanvas(await file.arrayBuffer(), clip.ctx, CANVAS_WIDTH, CANVAS_HEIGHT);
+    }
+    layers[0].push(clip);
+    buildTimeline(true);
+    setSelectedClip(clip);
+    render();
+    scheduleSave();
+}
+
+async function exportVideo() {
+    if (!exportVideoBtn || !project || !window.MediaRecorder || !canvas.captureStream) return;
+    const mimeTypes = ['video/mp4;codecs=avc1', 'video/webm;codecs=vp9', 'video/webm'];
+    const mimeType = mimeTypes.find(type => MediaRecorder.isTypeSupported(type));
+    if (!mimeType) return;
+    const chunks = [];
+    const recorder = new MediaRecorder(canvas.captureStream(FPS), { mimeType });
+    recorder.ondataavailable = event => event.data.size && chunks.push(event.data);
+    const stopped = new Promise(resolve => recorder.addEventListener('stop', resolve, { once: true }));
+    const previousFrame = currentFrame;
+    recorder.start();
+    const frameCount = Math.max(1, getMaxEndFrame());
+    for (let frame = 0; frame < frameCount; frame++) {
+        currentFrame = frame;
+        render();
+        await new Promise(resolve => setTimeout(resolve, 1000 / FPS));
+    }
+    recorder.stop();
+    await stopped;
+    currentFrame = previousFrame;
+    render();
+    const blob = new Blob(chunks, { type: mimeType.split(';')[0] });
+    const extension = mimeType.startsWith('video/mp4') ? 'mp4' : 'webm';
+    const durationSeconds = frameCount / FPS;
+    await saveExport({
+        id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+        projectId: project.id,
+        name: `${project.name} export`,
+        fileName: `${project.name.replace(/[^a-z0-9-_]/gi, '_')}.${extension}`,
+        mimeType: blob.type,
+        createdAt: Date.now(),
+        durationSeconds,
+        blob
+    });
+}
+
 function renderFramePreview(frame, previewCtx) {
     previewCtx.clearRect(0, 0, 20, 20);
     for (let i = layers.length - 1; i >= 0; i--) {
@@ -873,6 +1103,7 @@ function deleteSelectedClip() {
         }
     }
     if (!target) return;
+    pushClipHistory();
     const layer = layers[target.layerIndex];
     const index = layer.indexOf(target);
     if (index >= 0) layer.splice(index, 1);
@@ -894,6 +1125,7 @@ function splitSelectedClip() {
     const rightDuration = activeClip.end() - splitFrame;
     if (leftDuration <= 0 || rightDuration <= 0) return;
 
+    pushClipHistory();
     const newClip = new Clip(splitFrame, rightDuration, activeClip.layerIndex);
     newClip.ctx.drawImage(activeClip.canvas, 0, 0);
 
@@ -1134,6 +1366,7 @@ if (copyClipBtn) {
 if (pasteClipBtn) {
     pasteClipBtn.addEventListener("click", () => {
         if (!clipboardClip || !activeClip) return;
+        pushClipHistory();
         const layerIndex = activeClip.layerIndex;
         const layer = layers[layerIndex];
         const start = activeClip.end();
@@ -1149,6 +1382,41 @@ if (pasteClipBtn) {
     });
 }
 if (deleteClipBtn) deleteClipBtn.addEventListener("click", deleteSelectedClip);
+if (projectSettingsBtn) projectSettingsBtn.addEventListener('click', openProjectSettings);
+if (exportVideoBtn) exportVideoBtn.addEventListener('click', exportVideo);
+if (mediaImport) mediaImport.addEventListener('change', async event => {
+    for (const file of event.target.files) await importMedia(file);
+    event.target.value = '';
+});
+if (transformTool) transformTool.addEventListener('click', () => {
+    transformMode = !transformMode;
+    transformTool.classList.toggle('active', transformMode);
+    updateTransformOverlay();
+});
+if (panelResizeHandle) {
+    panelResizeHandle.addEventListener('pointerdown', event => {
+        event.preventDefault();
+        panelResizeState = { startX: event.clientX, width: editingPanel.offsetWidth };
+        window.addEventListener('pointermove', resizeEditingPanel);
+        window.addEventListener('pointerup', stopResizeEditingPanel, { once: true });
+    });
+}
+if (fpsGridContainer) {
+    fpsGridContainer.addEventListener('dragover', event => {
+        if (Array.from(event.dataTransfer?.types || []).includes('Files')) {
+            event.preventDefault();
+            fpsGridContainer.classList.add('is-dragging');
+        }
+    });
+    fpsGridContainer.addEventListener('dragleave', event => {
+        if (!fpsGridContainer.contains(event.relatedTarget)) fpsGridContainer.classList.remove('is-dragging');
+    });
+    fpsGridContainer.addEventListener('drop', async event => {
+        event.preventDefault();
+        fpsGridContainer.classList.remove('is-dragging');
+        for (const file of event.dataTransfer.files) await importMedia(file);
+    });
+}
 if (addFramesBtn) {
     addFramesBtn.addEventListener("click", () => {
         minVisibleFrames += 10;
@@ -1177,6 +1445,7 @@ if (editingButtons.length) {
 
 if (addLayerBtn) {
     addLayerBtn.addEventListener("click", () => {
+        pushClipHistory();
         layers.push([]);
         buildTimeline(true);
         scheduleSave();

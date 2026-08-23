@@ -1,11 +1,12 @@
 /* Editor styles */
 @use 'util/variables';
+@use 'components/modal';
 
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: system-ui, sans-serif;
+    font-family: "Segoe UI", sans-serif;
     // background-color: rgba(0, 0, 255, 0.166);
 }
 
@@ -56,7 +57,8 @@ header {
             display: flex;
             gap: 0.5rem;
             align-items: center;
-            &>*{
+
+            &>* {
                 width: 25px;
                 height: 25px;
             }
@@ -119,6 +121,12 @@ main {
         align-items: center;
         justify-content: center;
         touch-action: none;
+
+        &.is-dragging {
+            outline: 3px dashed variables.$primary;
+            outline-offset: -12px;
+            background: rgba(108, 92, 231, 0.12);
+        }
     }
 
 
@@ -139,7 +147,8 @@ footer {
         justify-content: space-between;
         padding: 5px;
         background-color: variables.$primary;
-        .playControls>*{
+
+        .playControls>* {
             width: 25px;
             height: 25px;
         }
@@ -204,16 +213,78 @@ footer {
 
         // right side of footer
         .editingPanel {
+            position: relative;
             overflow-y: scroll;
+            scroll-padding-bottom: 16px;
             display: flex;
             flex-direction: column;
-            min-width: max-content;
+            width: 90px;
+            min-width: 90px;
+            max-width: 90px;
+            flex: 0 0 90px;
             background-color: #8f8f8f;
             gap: 5px;
-            padding: 5px;
+            padding: 5px 5px 20px 5px;
+
             >* {
+                width: 100%;
+                min-width: 0;
                 background-color: #cccccc;
-                padding: 3px;
+                padding: 6px 3px;
+            }
+
+            .panel-resize-handle {
+                position: absolute;
+                left: -4px;
+                top: 0;
+                bottom: 0;
+                z-index: 20;
+                width: 8px;
+                padding: 0;
+                background: transparent;
+                cursor: ew-resize;
+            }
+
+            .tool-tile {
+                width: 100%;
+                height: 58px;
+                flex: 0 0 58px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                gap: 4px;
+                overflow: hidden;
+                text-align: center;
+
+                img {
+                    width: 20px;
+                    height: 20px;
+                    flex: 0 0 20px;
+                }
+
+                span {
+                    width: 100%;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                    font-size: 0.68rem;
+                }
+            }
+
+            .media-import {
+                width: 100%;
+                cursor: pointer;
+
+                input[type="file"] {
+                    display: none;
+                }
+            }
+
+            &::after {
+                content: "";
+                display: block;
+                flex: 0 0 16px;
             }
 
             &::-webkit-scrollbar {
@@ -221,4 +292,113 @@ footer {
             }
         }
     }
+}
+
+footer .fpsGridContainer.is-dragging {
+    outline: 3px dashed variables.$primary;
+    outline-offset: -12px;
+    background: rgba(108, 92, 231, 0.12);
+}
+
+.tool-tile {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    min-width: 78px;
+    min-height: 58px;
+
+    img {
+        width: 20px;
+        height: 20px;
+    }
+
+    &.active {
+        border-color: variables.$primary;
+        background: rgba(108, 92, 231, 0.14);
+    }
+}
+
+.transform-overlay {
+    position: absolute;
+    z-index: 30;
+    border: 1px solid variables.$primary;
+    pointer-events: none;
+}
+
+.transform-handle {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    padding: 0;
+    border: 2px solid variables.$primary;
+    border-radius: 50%;
+    background: #fff;
+    pointer-events: auto;
+}
+
+.transform-handle.nw {
+    left: -6px;
+    top: -6px;
+    cursor: nwse-resize;
+}
+
+.transform-handle.n {
+    left: calc(50% - 5px);
+    top: -6px;
+    cursor: ns-resize;
+}
+
+.transform-handle.ne {
+    right: -6px;
+    top: -6px;
+    cursor: nesw-resize;
+}
+
+.transform-handle.e {
+    right: -6px;
+    top: calc(50% - 5px);
+    cursor: ew-resize;
+}
+
+.transform-handle.se {
+    right: -6px;
+    bottom: -6px;
+    cursor: nwse-resize;
+}
+
+.transform-handle.s {
+    left: calc(50% - 5px);
+    bottom: -6px;
+    cursor: ns-resize;
+}
+
+.transform-handle.sw {
+    left: -6px;
+    bottom: -6px;
+    cursor: nesw-resize;
+}
+
+.transform-handle.w {
+    left: -6px;
+    top: calc(50% - 5px);
+    cursor: ew-resize;
+}
+
+.editor-modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: grid;
+    place-items: center;
+    padding: 24px;
+    background: rgba(20, 18, 23, 0.65);
+}
+
+.editor-modal {
+    position: relative;
+    width: min(100%, 430px);
+    max-height: calc(100vh - 48px);
+    overflow: auto;
 }

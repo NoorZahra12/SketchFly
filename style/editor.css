@@ -41,11 +41,79 @@ body.dark {
   --accent-opacity: 0.42;
 }
 
+.project-settings {
+  box-sizing: border-box;
+  position: relative;
+  width: 356px;
+  padding: 2rem;
+  border-radius: 8px;
+  background: var(--surface, #fff);
+  color: black;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+.project-settings h2 {
+  margin: 0 0 1.5rem;
+  font-size: 1.5rem;
+}
+.project-settings section {
+  margin-bottom: 1.5rem;
+}
+.project-settings label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+.project-settings input {
+  width: 100%;
+  padding: 0.6rem;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-radius: 6px;
+  background: transparent;
+  color: inherit;
+  font-size: 1rem;
+}
+.project-settings input:focus {
+  outline: 2px solid #6c5ce7;
+  outline-offset: 1px;
+}
+.project-settings .close-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 2rem;
+  height: 2rem;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+.project-settings .canvas-inputs,
+.project-settings .fps-input {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.project-settings .canvas-inputs input,
+.project-settings .fps-input input {
+  flex: 1;
+}
+.project-settings .make-project {
+  display: block;
+  margin: 1rem auto 0;
+  padding: 0.8rem 2rem;
+  border: 0;
+  border-radius: 6px;
+  background: #6c5ce7;
+  color: #fff;
+  cursor: pointer;
+}
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: system-ui, sans-serif;
+  font-family: "Segoe UI", sans-serif;
 }
 
 body {
@@ -146,6 +214,11 @@ main .containerview {
   justify-content: center;
   touch-action: none;
 }
+main .containerview.is-dragging {
+  outline: 3px dashed #6c5ce7;
+  outline-offset: -12px;
+  background: rgba(108, 92, 231, 0.12);
+}
 main canvas {
   border: 2px solid black;
   margin: auto;
@@ -215,19 +288,179 @@ footer .editorContainer .animationContainer .fpsGridContainer::-webkit-scrollbar
   display: none;
 }
 footer .editorContainer .editingPanel {
+  position: relative;
   overflow-y: scroll;
+  scroll-padding-bottom: 16px;
   display: flex;
   flex-direction: column;
-  min-width: -moz-max-content;
-  min-width: max-content;
+  width: 90px;
+  min-width: 90px;
+  max-width: 90px;
+  flex: 0 0 90px;
   background-color: #8f8f8f;
   gap: 5px;
-  padding: 5px;
+  padding: 5px 5px 20px 5px;
 }
 footer .editorContainer .editingPanel > * {
+  width: 100%;
+  min-width: 0;
   background-color: #cccccc;
-  padding: 3px;
+  padding: 6px 3px;
+}
+footer .editorContainer .editingPanel .panel-resize-handle {
+  position: absolute;
+  left: -4px;
+  top: 0;
+  bottom: 0;
+  z-index: 20;
+  width: 8px;
+  padding: 0;
+  background: transparent;
+  cursor: ew-resize;
+}
+footer .editorContainer .editingPanel .tool-tile {
+  width: 100%;
+  height: 58px;
+  flex: 0 0 58px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  overflow: hidden;
+  text-align: center;
+}
+footer .editorContainer .editingPanel .tool-tile img {
+  width: 20px;
+  height: 20px;
+  flex: 0 0 20px;
+}
+footer .editorContainer .editingPanel .tool-tile span {
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.68rem;
+}
+footer .editorContainer .editingPanel .media-import {
+  width: 100%;
+  cursor: pointer;
+}
+footer .editorContainer .editingPanel .media-import input[type=file] {
+  display: none;
+}
+footer .editorContainer .editingPanel::after {
+  content: "";
+  display: block;
+  flex: 0 0 16px;
 }
 footer .editorContainer .editingPanel::-webkit-scrollbar {
   display: none;
+}
+
+footer .fpsGridContainer.is-dragging {
+  outline: 3px dashed #6c5ce7;
+  outline-offset: -12px;
+  background: rgba(108, 92, 231, 0.12);
+}
+
+.tool-tile {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-width: 78px;
+  min-height: 58px;
+}
+.tool-tile img {
+  width: 20px;
+  height: 20px;
+}
+.tool-tile.active {
+  border-color: #6c5ce7;
+  background: rgba(108, 92, 231, 0.14);
+}
+
+.transform-overlay {
+  position: absolute;
+  z-index: 30;
+  border: 1px solid #6c5ce7;
+  pointer-events: none;
+}
+
+.transform-handle {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  padding: 0;
+  border: 2px solid #6c5ce7;
+  border-radius: 50%;
+  background: #fff;
+  pointer-events: auto;
+}
+
+.transform-handle.nw {
+  left: -6px;
+  top: -6px;
+  cursor: nwse-resize;
+}
+
+.transform-handle.n {
+  left: calc(50% - 5px);
+  top: -6px;
+  cursor: ns-resize;
+}
+
+.transform-handle.ne {
+  right: -6px;
+  top: -6px;
+  cursor: nesw-resize;
+}
+
+.transform-handle.e {
+  right: -6px;
+  top: calc(50% - 5px);
+  cursor: ew-resize;
+}
+
+.transform-handle.se {
+  right: -6px;
+  bottom: -6px;
+  cursor: nwse-resize;
+}
+
+.transform-handle.s {
+  left: calc(50% - 5px);
+  bottom: -6px;
+  cursor: ns-resize;
+}
+
+.transform-handle.sw {
+  left: -6px;
+  bottom: -6px;
+  cursor: nesw-resize;
+}
+
+.transform-handle.w {
+  left: -6px;
+  top: calc(50% - 5px);
+  cursor: ew-resize;
+}
+
+.editor-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(20, 18, 23, 0.65);
+}
+
+.editor-modal {
+  position: relative;
+  width: min(100%, 430px);
+  max-height: calc(100vh - 48px);
+  overflow: auto;
 }/*# sourceMappingURL=editor.css.map */

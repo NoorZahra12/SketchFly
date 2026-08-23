@@ -1,0 +1,45 @@
+.layer {
+    box-sizing: border-box;
+    position: relative;
+    width: 122px;
+    height: 138px;
+
+    .bg {
+        position: absolute;
+        inset: 0;
+        background: #fff;
+        border: 2px solid #000;
+        border-radius: 6px;
+    }
+
+    .thumbnail {
+        position: absolute;
+        inset: 0 0 20%;
+        background: #fff;
+        border-bottom: 1px solid #000;
+    }
+
+    .layer-name {
+        position: absolute;
+        bottom: 5px;
+        width: 100%;
+        text-align: center;
+    }
+
+    .transparency-eye {
+        position: absolute;
+        left: 7px;
+        top: 5px;
+        width: 20px;
+        height: 24px;
+        object-fit: cover;
+    }
+
+    .rectangle-39871 {
+        position: absolute;
+        left: 7px;
+        top: 77px;
+        width: 21px;
+        height: 28px;
+    }
+}

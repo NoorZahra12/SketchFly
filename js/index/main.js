@@ -1,6 +1,16 @@
-import { createProject, saveProject, getAllProjects } from "../projects.js";
+import { createProject, saveProject, getAllProjects, loadProject, updateProjectMeta, deleteProject, getAllExports, deleteExport } from "../projects.js";
+import { attachSettingsFunctions, applyStoredSettings } from "./settings.js";
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
+    applyStoredSettings();
+
+    function formatDuration(seconds) {
+        const totalSeconds = Math.max(0, Math.round(Number(seconds) || 0));
+        const hours = Math.floor(totalSeconds / 3600);
+        const minutes = Math.floor((totalSeconds % 3600) / 60);
+        const remainder = totalSeconds % 60;
+        return [hours, minutes, remainder].map(value => String(value).padStart(2, '0')).join(':');
+    }
 
     // ----------------------CTA & NAVBAR ----------------------------------
     // UI interactions:nav selection + CTA visibility + fragments loading
@@ -34,6 +44,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 defaultSection.classList.add("hidden");
                 contentContainer.classList.remove("hidden");
             } else {
+                contentContainer.replaceChildren();
                 defaultSection.classList.remove("hidden");
                 contentContainer.classList.add("hidden");
             }
@@ -115,6 +126,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 attachSettingsFunctions();
             } else if (sectionName === "gallery") {
                 attachGalleryFunctions(contentContainer);
+            } else if (sectionName === "export") {
+                attachExportsFunctions(contentContainer);
             }
         } catch (error) {
             console.error(error);
@@ -138,7 +151,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     // -----------------------------Modal----------------------------
-    function openModal(formPath) {
+    function openModal(formPath, projectToEdit = null) {
         // overlay
         const overlay = document.createElement("div");
         overlay.style.cssText = `
@@ -178,11 +191,33 @@ document.addEventListener("DOMContentLoaded", () => {
                     closeBtn.addEventListener("click", () => closeModal(overlay));
                 }
 
+                if (projectToEdit) {
+                    modal.querySelector("#project-name").value = projectToEdit.name;
+                    modal.querySelector("#canvas-width").value = projectToEdit.settings.CANVAS_WIDTH;
+                    modal.querySelector("#canvas-height").value = projectToEdit.settings.CANVAS_HEIGHT;
+                    modal.querySelector("#fps-value").value = projectToEdit.settings.FPS;
+                    modal.querySelector("#make-project-btn").textContent = "Save changes";
+                }
+
                 // Attach make project handler
                 const makeBtn = modal.querySelector("#make-project-btn");
                 if (makeBtn) {
                     makeBtn.addEventListener("click", async () => {
                         const get = (sel) => modal.querySelector(sel)?.value ?? "";
+                        if (projectToEdit) {
+                            await updateProjectMeta(projectToEdit.id, {
+                                name: get("#project-name") || projectToEdit.name,
+                                settings: {
+                                    ...projectToEdit.settings,
+                                    CANVAS_WIDTH: Number(get("#canvas-width")) || 800,
+                                    CANVAS_HEIGHT: Number(get("#canvas-height")) || 600,
+                                    FPS: Number(get("#fps-value")) || 12,
+                                },
+                            });
+                            closeModal(overlay);
+                            await attachGalleryFunctions(contentContainer);
+                            return;
+                        }
                         const project = createProject(
                             get("#project-name") || "Untitled Project",
                             {
@@ -231,26 +266,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 
-    // ------------------------ Check Theme -----------------------------------------
-    if (localStorage.getItem("theme") === "dark") {
-        document.body.classList.add("dark");
-    }
-
-    // ------------------------ Settings functions -----------------------------------------
-    function attachSettingsFunctions() {
-        const toggleButton = document.querySelector(".toggle");
-        if (toggleButton) {
-            // theme
-            if (localStorage.getItem("theme") === "dark") {
-                document.body.classList.add("dark");
-                // update the button's content n show moon icon
-            }
-            toggleButton.addEventListener("click", () => {
-                const dark = document.body.classList.toggle("dark");
-                localStorage.setItem("theme", dark ? "dark" : "light");
-            });
-        }
-    }
 
 
     // ------------------------ Gallery functions -----------------------------------------
@@ -282,6 +297,30 @@ document.addEventListener("DOMContentLoaded", () => {
                 projectCard.querySelector('.currentfpsIndicator').textContent = `${project.fps} FPS`;
                 projectCard.querySelector('.timedisplay').textContent = project.duration;
                 projectCard.dataset.projectId = project.id;
+                const starButton = projectCard.querySelector('.starred');
+                starButton.classList.toggle('is-starred', project.starred);
+                starButton.setAttribute('aria-pressed', String(project.starred));
+                starButton.addEventListener('click', async (event) => {
+                    event.stopPropagation();
+                    await updateProjectMeta(project.id, { starred: !project.starred });
+                    await attachGalleryFunctions(container);
+                });
+                const menuButton = projectCard.querySelector('.project-menu-button');
+                const menu = projectCard.querySelector('.project-menu');
+                menuButton.addEventListener('click', (event) => {
+                    event.stopPropagation();
+                    menu.hidden = !menu.hidden;
+                });
+                menu.querySelector('[data-action="edit"]').addEventListener('click', async () => {
+                    const fullProject = await loadProject(project.id);
+                    if (fullProject) openModal('indexAssets/components/modal.html', fullProject);
+                });
+                menu.querySelector('[data-action="delete"]').addEventListener('click', async () => {
+                    if (confirm(`Delete ${project.name}?`)) {
+                        await deleteProject(project.id);
+                        await attachGalleryFunctions(container);
+                    }
+                });
                 const thumbnail = projectCard.querySelector('.thumbnail');
                 if (project.thumbnail) {
                     const image = document.createElement('img');
@@ -302,6 +341,52 @@ document.addEventListener("DOMContentLoaded", () => {
             console.error(error);
             scroller.innerHTML = '<p>Error loading projects.</p>';
         }
+    }
+
+    async function attachExportsFunctions(container) {
+        const scroller = container.querySelector('.scroller');
+        if (!scroller) return;
+        scroller.replaceChildren();
+        const exports = await getAllExports();
+        if (!exports.length) {
+            scroller.innerHTML = '<p class="empty-state">No exports yet.</p>';
+            return;
+        }
+        const templateResponse = await fetch('./indexAssets/components/videoCards.html');
+        const template = await templateResponse.text();
+        exports.forEach((item) => {
+            const wrapper = document.createElement('div');
+            wrapper.innerHTML = template;
+            const card = wrapper.querySelector('.video-player');
+            const video = card.querySelector('.player');
+            video.src = URL.createObjectURL(item.blob);
+            video.loop = true;
+            video.muted = true;
+            video.playsInline = true;
+            video.setAttribute('aria-label', `${item.name} preview`);
+            card.querySelector('.project-name').textContent = item.name;
+            card.querySelector('._00-00').textContent = formatDuration(item.durationSeconds);
+            const menu = card.querySelector('.round');
+            if (menu) menu.remove();
+            video.addEventListener('click', () => video.paused ? video.play() : video.pause());
+            const actions = document.createElement('div');
+            actions.className = 'export-actions';
+            actions.innerHTML = '<button type="button" data-download>Download</button><button type="button" data-delete>Delete</button>';
+            card.querySelector('.infos').appendChild(actions);
+            card.querySelector('[data-download]').addEventListener('click', () => {
+                const url = URL.createObjectURL(item.blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = item.fileName;
+                link.click();
+                URL.revokeObjectURL(url);
+            });
+            card.querySelector('[data-delete]').addEventListener('click', async () => {
+                await deleteExport(item.id);
+                await attachExportsFunctions(container);
+            });
+            scroller.appendChild(card);
+        });
     }
 
 

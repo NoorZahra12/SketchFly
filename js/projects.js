@@ -3,7 +3,8 @@
 
 const DB_NAME = 'SketchFlyDB';
 const STORE_NAME = 'projects';
-const DB_VERSION = 1;
+const EXPORT_STORE_NAME = 'exports';
+const DB_VERSION = 2;
 
 let db = null;
 
@@ -15,6 +16,9 @@ function openDB() {
             const db = e.target.result;
             if (!db.objectStoreNames.contains(STORE_NAME)) {
                 db.createObjectStore(STORE_NAME, { keyPath: 'id' });
+            }
+            if (!db.objectStoreNames.contains(EXPORT_STORE_NAME)) {
+                db.createObjectStore(EXPORT_STORE_NAME, { keyPath: 'id' });
             }
         };
         request.onsuccess = (e) => {
@@ -61,6 +65,7 @@ export function createProject(name, settings = {}) {
         name: name || 'Untitled',
         createdAt: Date.now(),
         updatedAt: Date.now(),
+        starred: false,
         settings: {
             ...DEFAULT_SETTINGS,
             ...settings,
@@ -124,11 +129,15 @@ export async function getAllProjects() {
         request.onerror = () => reject(request.error);
     });
     // Return only metadata (exclude heavy image data)
-    return all.map(p => ({
+    return all.sort((a, b) => {
+        if (Boolean(a.starred) !== Boolean(b.starred)) return a.starred ? -1 : 1;
+        return (b.createdAt || 0) - (a.createdAt || 0);
+    }).map(p => ({
         id: p.id,
         name: p.name,
         createdAt: p.createdAt,
         updatedAt: p.updatedAt,
+        starred: Boolean(p.starred),
         fps: p.settings?.FPS ?? DEFAULT_SETTINGS.FPS,
         duration: formatDuration(p.durationFrames ?? 1, p.settings?.FPS ?? DEFAULT_SETTINGS.FPS),
         thumbnail: p.thumbnail || null
@@ -184,5 +193,43 @@ export function bufferToCanvas(buffer, ctx, width, height) {
             resolve();
         };
         img.src = URL.createObjectURL(blob);
+    });
+}
+
+export async function updateProjectMeta(id, changes) {
+    const project = await loadProject(id);
+    if (!project) return null;
+    const updated = { ...project, ...changes, updatedAt: Date.now() };
+    await saveProject(updated);
+    return updated;
+}
+
+export async function saveExport(exportRecord) {
+    const database = await openDB();
+    const tx = database.transaction(EXPORT_STORE_NAME, 'readwrite');
+    tx.objectStore(EXPORT_STORE_NAME).put(exportRecord);
+    await new Promise((resolve, reject) => {
+        tx.oncomplete = resolve;
+        tx.onerror = () => reject(tx.error);
+    });
+}
+
+export async function getAllExports() {
+    const database = await openDB();
+    const tx = database.transaction(EXPORT_STORE_NAME, 'readonly');
+    const request = tx.objectStore(EXPORT_STORE_NAME).getAll();
+    return new Promise((resolve, reject) => {
+        request.onsuccess = () => resolve(request.result.sort((a, b) => b.createdAt - a.createdAt));
+        request.onerror = () => reject(request.error);
+    });
+}
+
+export async function deleteExport(id) {
+    const database = await openDB();
+    const tx = database.transaction(EXPORT_STORE_NAME, 'readwrite');
+    tx.objectStore(EXPORT_STORE_NAME).delete(id);
+    await new Promise((resolve, reject) => {
+        tx.oncomplete = resolve;
+        tx.onerror = () => reject(tx.error);
     });
 }

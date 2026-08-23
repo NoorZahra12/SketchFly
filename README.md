@@ -15,12 +15,17 @@ The project is a frontend prototype for an animation studio. Its main goals are 
 
 ## Current Status
 
-The app is currently a static browser application with no build step or backend.
+The app is currently a static browser application with no build step or backend. Projects and exports are stored in IndexedDB for the current browser profile.
 
 - New projects are created from the modal and opened as `editor.html?id=<project-id>`.
 - The editor loads the selected project's settings, layers, clips, and frame images.
 - Changes autosave after drawing and timeline edits. `Ctrl+S` also saves immediately.
 - The gallery reads project metadata and first-frame thumbnails from IndexedDB.
+- Starred projects appear first; all other projects are ordered newest to oldest.
+- Gallery cards support star, edit settings, and delete actions through the overflow menu.
+- The editor accepts PNG, JPG, MP4, and MP3 files as timeline clips. Image clips render on the canvas, while imported media is preserved with clip metadata.
+- Assets can be added with the **Import assets** button in the editor or by dragging files onto the canvas area.
+- Video exports appear in Exports and can be downloaded. The browser's supported `MediaRecorder` format is used, so some browsers produce WebM instead of MP4.
 - Theme selection is stored in `localStorage` under `theme`.
 - `data/projects.json` remains as sample metadata, but it is not the live gallery source.
 
@@ -67,7 +72,7 @@ flowchart TD
 1. `index.html` provides the navigation, landing section, and empty content container.
 2. `js/index/main.js` listens for navigation clicks.
 3. The selected page fragment is fetched from `indexAssets/pages/` and inserted into `#content-container`.
-4. Gallery data is read from IndexedDB; `projectCard.html` is used as the card template.
+4. Gallery data is read from IndexedDB; `projectCard.html` is used as the card template. Starred status and creation time determine ordering.
 5. The Animate button fetches `modal.html`, creates and saves a project, and redirects to `editor.html?id=<project-id>`.
 
 ### Editor
@@ -82,12 +87,15 @@ flowchart TD
 
 The editor initializes a blank clip only when the selected project has no clips.
 
+Use **Import assets** to choose one or more PNG, JPG, MP4, or MP3 files. You can also drag supported files directly onto the canvas area. Imported items are added to the timeline as clips; image files are drawn into the canvas, and audio/video files retain their media Blob for future playback support.
+
 ### Data storage
 
 There are two storage paths at the moment:
 
 - `localStorage`: small browser preferences and the latest project-creation form values.
 - IndexedDB: the storage for complete projects, exposed through `js/projects.js` with `createProject`, `saveProject`, `loadProject`, `getAllProjects`, and `deleteProject`.
+- IndexedDB also contains an `exports` store for generated video blobs.
 
 Keep large canvas or frame data out of `localStorage`; use IndexedDB or another database instead.
 
@@ -123,6 +131,8 @@ indexAssets/images/              Logos and image assets
 
 Create projects through the modal. For seeded or imported projects, save records with `createProject()` and `saveProject()` so the gallery can read their metadata and thumbnail.
 
+Gallery overflow actions update project name and star state in IndexedDB. The editor's Project Settings button updates the same record.
+
 ### Connect project persistence
 
 The recommended flow is:
@@ -133,6 +143,14 @@ The recommended flow is:
 4. Convert stored frame image buffers back into canvases with `bufferToCanvas()`.
 5. Save after meaningful edits such as drawing, clip changes, layer changes, and project settings changes.
 6. Use `getAllProjects()` for gallery metadata and the stored `thumbnail` buffer for the first-frame preview.
+
+### Add editor icons
+
+Place SVG files in `editorAssets/icons/` using the names referenced by `editor.html`, including `pencil.svg`, `eraser.svg`, `home.svg`, `settings.svg`, `undo.svg`, `redo.svg`, `cut.svg`, `copy.svg`, `paste.svg`, `delete.svg`, and `onion.svg`.
+
+### Localization
+
+The Settings fragment creates language names with `Intl.DisplayNames`. Choosing a language calls the LibreTranslate-compatible API from `js/index/main.js` to translate page text. The `.logo` element is excluded so the SketchFly brand remains unchanged. Network access is required, and a self-hosted or authenticated endpoint is recommended for production.
 
 When changing the project schema, increment `DB_VERSION` and add a migration in `openDB()`.
 
@@ -146,3 +164,5 @@ Keep editor state changes inside `js/editor/main.js` and reuse the existing `Cli
 - **The gallery is empty:** create a project first, then check that browser storage is enabled and the server is started from the project root.
 - **Changes appear to be missing:** clear the browser's site data if old `localStorage` or IndexedDB values are affecting the result.
 - **Editor project data does not persist:** confirm the page is running from a local server and that browser storage is enabled for the site.
+- **Exports are WebM instead of MP4:** MP4 recording depends on browser codec support; the app chooses the best supported `MediaRecorder` MIME type.
+- **Icons are missing:** add the SVG assets to `editorAssets/icons/` using the filenames referenced by `editor.html`.
