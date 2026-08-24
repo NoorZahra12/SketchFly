@@ -33,8 +33,14 @@ The app is currently a static browser application with no build step or backend.
 
 Because the app uses JavaScript modules and `fetch()` to load HTML fragments, run it through a local web server. Opening `index.html` directly with a `file://` URL may prevent these requests from working.
 
-### Option 1: Python
+### Option 1: GitHub Pages
+Link: https://noorzahra12.github.io/SketchFly/
 
+### Option 2: VS Code Live Server
+Install the Live Server extension, right-click `index.html`, and choose **Open with Live Server**.
+The app has no `package.json`, so `npm install` and a frontend build command are not required at this stage.
+
+### Option 3: Python
 From the project folder:
 
 ```powershell
@@ -42,12 +48,6 @@ py -m http.server 8000
 ```
 
 Then open [http://localhost:8000](http://localhost:8000) in a browser.
-
-### Option 2: VS Code Live Server
-
-Install the Live Server extension, right-click `index.html`, and choose **Open with Live Server**.
-
-The app has no `package.json`, so `npm install` and a frontend build command are not required at this stage.
 
 ## How The App Is Connected
 
@@ -82,10 +82,10 @@ flowchart TD
 - Creates the canvas and animation timeline.
 - Stores drawing frames as `Clip` objects inside layer arrays.
 - Renders the active frame and previews into canvas elements.
-- Handles pencil, eraser, color, zoom, pan, playback, onion skin, and keyboard shortcuts.
+- Handles pencil, eraser, colour, zoom, pan, playback, onion skin, and keyboard shortcuts.
 - Maintains undo and redo stacks per clip, limited by `MAX_UNDO`.
 
-The editor initializes a blank clip only when the selected project has no clips.
+The editor initialises a blank clip only when the selected project has no clips.
 
 Use **Import assets** to choose one or more PNG, JPG, MP4, or MP3 files. You can also drag supported files directly onto the canvas area. Imported items are added to the timeline as clips; image files are drawn into the canvas, and audio/video files retain their media Blob for future playback support.
 
@@ -116,7 +116,7 @@ style/**/*.scss                  Source SCSS files for styling work
 indexAssets/images/              Logos and image assets
 ```
 
-## Making Future Updates
+## Current progress
 
 ### Add a home page section
 
@@ -156,13 +156,12 @@ When changing the project schema, increment `DB_VERSION` and add a migration in 
 
 ### Update editor behavior
 
-Keep editor state changes inside `js/editor/main.js` and reuse the existing `Clip` and layer model. When adding a new tool, update the toolbar markup in `editor.html`, register its event handlers, and include its rendering behavior in both the pointer handlers and `render()` where appropriate.
+Keep editor state changes inside `js/editor/main.js` and reuse the existing `Clip` and layer model. When adding a new tool, update the toolbar markup in `editor.html`, register its event handlers, and include its rendering behaviour in both the pointer handlers and `render()` where appropriate.
 
 ## Troubleshooting
 
-- **Fragments do not load:** use a local web server instead of opening the HTML file directly. the js files that are using Fetch() from other js files which will not run without a server the contents need to load via fetch().
 - **The gallery is empty:** create a project first, then check that browser storage is enabled and the server is started from the project root.
 - **Changes appear to be missing:** clear the browser's site data if old `localStorage` or IndexedDB values are affecting the result.
 - **Editor project data does not persist:** confirm the page is running from a local server and that browser storage is enabled for the site.
 - **Exports are WebM instead of MP4:** MP4 recording depends on browser codec support; the app chooses the best supported `MediaRecorder` MIME type.
-- **Icons are missing:** add the SVG assets to `editorAssets/icons/` using the filenames referenced by `editor.html`.
+- **Icons are wip:** add the SVG assets to `editorAssets/icons/` using the filenames referenced by `editor.html`.
