@@ -979,7 +979,7 @@ async function exportVideo() {
     await saveExport({
         id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
         projectId: project.id,
-        name: `${project.name} export`,
+        name: `${project.name}`,
         fileName: `${project.name.replace(/[^a-z0-9-_]/gi, '_')}.${extension}`,
         mimeType: blob.type,
         createdAt: Date.now(),

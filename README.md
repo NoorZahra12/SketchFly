@@ -34,13 +34,16 @@ The app is currently a static browser application with no build step or backend.
 Because the app uses JavaScript modules and `fetch()` to load HTML fragments, run it through a local web server. Opening `index.html` directly with a `file://` URL may prevent these requests from working.
 
 ### Option 1: GitHub Pages
+
 Link: https://noorzahra12.github.io/SketchFly/
 
 ### Option 2: VS Code Live Server
+
 Install the Live Server extension, right-click `index.html`, and choose **Open with Live Server**.
 The app has no `package.json`, so `npm install` and a frontend build command are not required at this stage.
 
 ### Option 3: Python
+
 From the project folder:
 
 ```powershell
