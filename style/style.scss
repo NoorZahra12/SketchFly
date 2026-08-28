@@ -472,7 +472,7 @@ body:not(.dark) {
         color 0.2s ease,
         background 0.2s ease,
         border-color 0.25s ease;
-    border: 3px solid gold;
+    border: 2px solid white;
 
     &:hover {
         background: white;
@@ -555,6 +555,7 @@ body:not(.dark) {
 
     h1 {
         font-family: "Parisienne", cursive;
+        // Snell Roundhand, cursive
         font-size: 6.5vw;
 
         @include mixins.media('mobile') {
