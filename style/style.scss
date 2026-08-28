@@ -472,19 +472,18 @@ body:not(.dark) {
         color 0.2s ease,
         background 0.2s ease,
         border-color 0.25s ease;
-    border: 2px solid white;
+    // border: 2px solid white;
 
     &:hover {
         background: white;
         color: variables.$primary;
-        filter: none;
-        border: 3px solid gold;
-        filter: drop-shadow(0 0 10px color.scale(gold, $lightness: 27.2727272727%));
+        border: 3px solid rgba(variables.$primary, 100%);
+        filter: drop-shadow(0 0 10px color.scale(white, $lightness: 30%));
     }
 
     &:active {
         transform: translateY(0);
-        box-shadow: 0 6px 16px rgba(variables.$primary, 0.35);
+        box-shadow: 0 6px 16px rgba(white, 0.30);
     }
 
     .cta-ripple {
@@ -492,7 +491,7 @@ body:not(.dark) {
         width: 0;
         height: 0;
         border-radius: 50%;
-        background: rgb(255, 244, 219);
+        background: white;
         transform: translate(-50%, -50%);
         transition: width 0.9s ease, height 0.9s ease, opacity 0.0s ease;
         z-index: -1;

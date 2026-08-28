@@ -987,25 +987,23 @@ body:not(.dark) header .logo img {
   border: 5px solid var(--bg);
   border: none;
   transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease, color 0.2s ease, background 0.2s ease, border-color 0.25s ease;
-  border: 2px solid white;
 }
 .cta:hover {
   background: white;
   color: #6c5ce7;
-  filter: none;
-  border: 3px solid gold;
-  filter: drop-shadow(0 0 10px rgb(255, 225.9090909091, 69.5454545454));
+  border: 3px solid #6c5ce7;
+  filter: drop-shadow(0 0 10px white);
 }
 .cta:active {
   transform: translateY(0);
-  box-shadow: 0 6px 16px rgba(108, 92, 231, 0.35);
+  box-shadow: 0 6px 16px rgba(255, 255, 255, 0.3);
 }
 .cta .cta-ripple {
   position: absolute;
   width: 0;
   height: 0;
   border-radius: 50%;
-  background: rgb(255, 244, 219);
+  background: white;
   transform: translate(-50%, -50%);
   transition: width 0.9s ease, height 0.9s ease, opacity 0s ease;
   z-index: -1;
