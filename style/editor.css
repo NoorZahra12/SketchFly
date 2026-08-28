@@ -117,6 +117,7 @@ body.dark {
   -webkit-user-select: none;
      -moz-user-select: none;
           user-select: none;
+  touch-action: none;
 }
 
 body {
@@ -128,25 +129,6 @@ body {
   display: flex;
   flex-direction: column;
   overflow: hidden;
-}
-
-.icon-btn::after {
-  content: attr(title);
-  position: absolute;
-  bottom: -2rem;
-  left: 50%;
-  transform: translateX(-50%);
-  color: white;
-  padding: 0.4rem 0.8rem;
-  border-radius: 4px;
-  font-size: 0.75rem;
-  white-space: nowrap;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.2s ease;
-}
-.icon-btn:hover {
-  cursor: pointer;
 }
 
 /* Header nav layout */
@@ -165,17 +147,34 @@ header nav section {
   gap: 5px;
   align-items: center;
 }
-header nav section > * {
-  width: 33px;
-  height: 33px;
+header nav section .icon-btn {
+  min-width: 40px;
+  min-height: 40px;
   border: 2px solid #aaa;
   border-radius: 50px;
   display: grid;
   place-items: center;
 }
-header nav section > * svg {
-  width: 15px;
-  height: auto;
+header nav section .icon-btn::after {
+  content: attr(title);
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  color: white;
+  padding: 10px;
+  border-radius: 4px;
+  font-size: 18px;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+header nav section .icon-btn:hover {
+  cursor: pointer;
+}
+header nav section .icon-btn a img {
+  width: 30px;
+  height: 30px;
   padding: 5px;
 }
 
@@ -188,10 +187,10 @@ main {
 }
 main aside {
   margin-right: auto;
-  padding: 0.5rem;
+  padding: 5px;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 5px;
   z-index: 10;
 }
 main aside > * {

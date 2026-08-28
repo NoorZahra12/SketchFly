@@ -473,7 +473,7 @@ function buildTimeline(force = false) {
         row.style.backgroundImage = `linear-gradient(to right, rgba(255,255,255,0.08) 1px, transparent 1px)`;
         row.style.backgroundSize = `${pxPerFrame}px 100%`;
 
-        row.addEventListener("mousedown", e => {
+        row.addEventListener("pointerdown", e => {
             if (e.target !== row) return;
             const rect = fpsGridContainer.getBoundingClientRect();
             const x = e.clientX - rect.left + animationContainer.scrollLeft;
@@ -643,7 +643,7 @@ function createClipDOM(clip, row) {
 
     updateClipStyle(clip);
 
-    el.addEventListener("mousedown", e => {
+    el.addEventListener("pointerdown", e => {
         e.stopPropagation();
         const target = e.target;
         const mode = target === left ? "L" : target === right ? "R" : "M";
@@ -659,6 +659,7 @@ function createClipDOM(clip, row) {
 let dragState = null;
 
 function startClipDrag(e, clip, mode) {
+    e.preventDefault();          // prevent scrolling/zooming
     pushClipHistory();
     dragState = {
         clip,
@@ -669,8 +670,9 @@ function startClipDrag(e, clip, mode) {
         startDuration: clip.duration,
         startLayer: clip.layerIndex
     };
-    window.addEventListener("mousemove", onClipDrag);
-    window.addEventListener("mouseup", endClipDrag);
+    // Use ONLY pointer events
+    window.addEventListener("pointermove", onClipDrag);
+    window.addEventListener("pointerup", endClipDrag);
 }
 
 function onClipDrag(e) {
@@ -732,8 +734,8 @@ function onClipDrag(e) {
 }
 
 function endClipDrag() {
-    window.removeEventListener("mousemove", onClipDrag);
-    window.removeEventListener("mouseup", endClipDrag);
+    window.removeEventListener("pointermove", onClipDrag);
+    window.removeEventListener("pointerup", endClipDrag);
     dragState = null;
     scheduleSave();
 }
@@ -794,9 +796,12 @@ function redo() {
     scheduleSave();
 }
 
-canvas.addEventListener("mousedown", e => {
+// ===== POINTER DOWN =====
+canvas.addEventListener("pointerdown", e => {
+    e.preventDefault();
+    canvas.setPointerCapture(e.pointerId);   // keep tracking
+
     if (handMode) {
-        e.preventDefault();
         panning = true;
         panStartX = e.clientX;
         panStartY = e.clientY;
@@ -805,9 +810,12 @@ canvas.addEventListener("mousedown", e => {
         updateCursor();
         return;
     }
+
     if (!activeClip) return;
+
     drawing = true;
     drawSnapshot = snapshot(activeClip);
+
     const p = getCanvasPos(e);
     const c = activeClip.ctx;
     c.beginPath();
@@ -833,7 +841,10 @@ canvas.addEventListener("mousedown", e => {
     render();
 });
 
-canvas.addEventListener("mousemove", e => {
+// ===== POINTER MOVE =====
+canvas.addEventListener("pointermove", e => {
+    e.preventDefault();   // prevent scrolling
+
     if (handMode && panning) {
         const dx = e.clientX - panStartX;
         const dy = e.clientY - panStartY;
@@ -842,7 +853,10 @@ canvas.addEventListener("mousemove", e => {
         applyCanvasTransform();
         return;
     }
+
+    // Only draw if drawing is true and we have an active clip
     if (!activeClip || !drawing) return;
+
     const p = getCanvasPos(e);
     const c = activeClip.ctx;
 
@@ -866,18 +880,26 @@ canvas.addEventListener("mousemove", e => {
     render();
 });
 
-window.addEventListener("mouseup", () => {
+// ===== POINTER UP =====
+window.addEventListener("pointerup", e => {
+    e.preventDefault();
+
     if (panning) {
         panning = false;
         updateCursor();
     }
+
     if (drawing && activeClip && drawSnapshot) {
         pushUndo(activeClip, drawSnapshot);
         drawSnapshot = null;
         refreshAllPreviews();
         scheduleSave();
     }
+
     drawing = false;
+
+    // Release capture
+    canvas.releasePointerCapture(e.pointerId);
 });
 
 function render() {
@@ -1230,7 +1252,7 @@ animationContainer.addEventListener("scroll", () => {
     updatePlayhead();
 });
 
-fpsGridContainer.addEventListener("mousedown", e => {
+fpsGridContainer.addEventListener("pointerdown", e => {
     if (e.target.closest(".clip")) return;
     const rect = fpsGridContainer.getBoundingClientRect();
     const x = e.clientX - rect.left + animationContainer.scrollLeft;
@@ -1238,7 +1260,7 @@ fpsGridContainer.addEventListener("mousedown", e => {
     gotoFrame(frame);
 });
 
-fpsScale.addEventListener("mousedown", e => {
+fpsScale.addEventListener("pointerdown", e => {
     const rect = fpsScale.getBoundingClientRect();
     const x = e.clientX - rect.left + animationContainer.scrollLeft;
     const frame = Math.floor(x / pxPerFrame);
@@ -1324,7 +1346,7 @@ window.addEventListener("resize", () => {
 });
 
 // changing cursor when hovering over canvas
-canvas.addEventListener("mouseenter", updateCursor);
+canvas.addEventListener("pointerenter", updateCursor);
 // adding event listeners to buttons and other elements
 pencilBtn.addEventListener("click", () => setTool("pencil"));
 eraserBtn.addEventListener("click", () => setTool("eraser"));
@@ -1507,7 +1529,7 @@ window.addEventListener("keyup", e => {
 });
 
 // This is to pause the playing of the loop when clicking anywhere on the screen
-document.addEventListener('click', function(e) {
+document.addEventListener('click', function (e) {
     // Ignore clicks on the Play/Pause button, so it can still toggle properly
     if (e.target.closest('button[title="Play / Pause"]')) {
         return;

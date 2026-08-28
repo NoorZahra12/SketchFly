@@ -15,12 +15,13 @@
     padding: 0;
     box-sizing: border-box;
     font-family: system-ui, sans-serif;
+    user-select: none;
 }
 
 body {
     background: var(--bg);
     color: var(--text);
-    font-size: var(--app-font-size, 16px);
+    font-size: clamp(0.95rem, 0.7vw + 0.75rem, 1.2rem);
     transition: background-color 0.3s, color 0.3s;
     overflow-y: hidden;
     display: flex;
@@ -67,7 +68,7 @@ body {
 
             h1 {
                 font-weight: 600;
-                font-size: 2rem;
+                font-size: 2.2rem;
                 color: var(--text);
                 transition: linear 0.2s;
                 filter: drop-shadow(0 0 5px var(--bg));
@@ -102,7 +103,7 @@ body {
                 background-color: inherit;
                 border: none;
                 color: inherit;
-                font-size: 1rem;
+                font-size: clamp(0.95rem, 0.7vw + 0.75rem, 1.2rem);
                 cursor: pointer;
                 padding: 8px;
                 transition: border-color 0.3s ease;
@@ -448,7 +449,7 @@ body:not(.dark) {
 }
 
 .cta {
-    font-size: clamp(0.95rem, 0.7vw + 0.75rem, 1.2rem);
+    font-size: clamp(1rem, 0.8vw + 0.80rem, 1.3rem);
     padding: 0.9em 1.8em;
     border-radius: 50px;
     font-weight: 600;

@@ -8,6 +8,7 @@
     box-sizing: border-box;
     font-family: "Segoe UI", sans-serif;
     user-select: none;
+    touch-action: none;
     // background-color: rgba(0, 0, 255, 0.166);
 }
 
@@ -22,27 +23,6 @@ body {
     overflow: hidden;
 }
 
-.icon-btn {
-    &::after {
-        content: attr(title);
-        position: absolute;
-        bottom: -2rem;
-        left: 50%;
-        transform: translateX(-50%);
-        color: white;
-        padding: 0.4rem 0.8rem;
-        border-radius: 4px;
-        font-size: 0.75rem;
-        white-space: nowrap;
-        pointer-events: none;
-        opacity: 0;
-        transition: opacity 0.2s ease;
-    }
-
-    &:hover {
-        cursor: pointer;
-    }
-}
 
 /* Header nav layout */
 header {
@@ -61,23 +41,46 @@ header {
             gap: 5px;
             align-items: center;
 
-            &>* {
-                width: 33px;
-                height: 33px;
+            .icon-btn {
+                min-width: 40px;
+                min-height: 40px;
                 border: 2px solid #aaa;
                 border-radius: 50px;
                 display: grid;
                 place-items: center;
 
-                svg {
-                    width: 15px;
-                    height: auto;
-                    padding: 5px;
+                &::after {
+                    content: attr(title);
+                    position: absolute;
+                    // bottom: -2rem;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    color: white;
+                    padding: 10px;
+                    border-radius: 4px;
+                    font-size: 18px;
+                    white-space: nowrap;
+                    pointer-events: none;
+                    opacity: 0;
+                    transition: opacity 0.2s ease;
+                }
+
+                &:hover {
+                    cursor: pointer;
+                }
+
+                a {
+                    img {
+                        width: 30px;
+                        height: 30px;
+                        padding: 5px;
+                    }
                 }
             }
         }
     }
 }
+
 
 
 main {
@@ -90,10 +93,10 @@ main {
 
     aside {
         margin-right: auto;
-        padding: 0.5rem;
+        padding: 5px;
         display: flex;
         flex-direction: column;
-        gap: 0.5rem;
+        gap: 5px;
         z-index: 10;
 
         &>* {
@@ -164,10 +167,11 @@ footer {
         .playControls>* {
             width: 25px;
             height: 25px;
-            &>*{
-            background: transparent;
-            border: 2px solid #555;
-            color: #ccc;
+
+            &>* {
+                background: transparent;
+                border: 2px solid #555;
+                color: #ccc;
             }
         }
     }
