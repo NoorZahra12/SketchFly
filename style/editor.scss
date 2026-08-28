@@ -7,11 +7,12 @@
     padding: 0;
     box-sizing: border-box;
     font-family: "Segoe UI", sans-serif;
+    user-select: none;
     // background-color: rgba(0, 0, 255, 0.166);
 }
 
 body {
-    background: var(--bg);
+    background-color: #333;
     color: var(--text);
     transition: background-color 0.3s, color 0.3s;
     width: 100vw;
@@ -37,15 +38,16 @@ body {
         opacity: 0;
         transition: opacity 0.2s ease;
     }
-    &:hover{
+
+    &:hover {
         cursor: pointer;
     }
 }
 
 /* Header nav layout */
 header {
-    background: var(--bg);
-    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    background: #eee;
+    // border-bottom: 1px solid #595959;
 
     nav {
         display: flex;
@@ -56,12 +58,22 @@ header {
 
         section {
             display: flex;
-            gap: 0.5rem;
+            gap: 5px;
             align-items: center;
 
             &>* {
-                width: 25px;
-                height: 25px;
+                width: 33px;
+                height: 33px;
+                border: 2px solid #aaa;
+                border-radius: 50px;
+                display: grid;
+                place-items: center;
+
+                svg {
+                    width: 15px;
+                    height: auto;
+                    padding: 5px;
+                }
             }
         }
     }
@@ -152,6 +164,11 @@ footer {
         .playControls>* {
             width: 25px;
             height: 25px;
+            &>*{
+            background: transparent;
+            border: 2px solid #555;
+            color: #ccc;
+            }
         }
     }
 

@@ -114,10 +114,13 @@ body.dark {
   padding: 0;
   box-sizing: border-box;
   font-family: "Segoe UI", sans-serif;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
 }
 
 body {
-  background: var(--bg);
+  background-color: #333;
   color: var(--text);
   transition: background-color 0.3s, color 0.3s;
   width: 100vw;
@@ -148,8 +151,7 @@ body {
 
 /* Header nav layout */
 header {
-  background: var(--bg);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  background: #eee;
 }
 header nav {
   display: flex;
@@ -160,12 +162,21 @@ header nav {
 }
 header nav section {
   display: flex;
-  gap: 0.5rem;
+  gap: 5px;
   align-items: center;
 }
 header nav section > * {
-  width: 25px;
-  height: 25px;
+  width: 33px;
+  height: 33px;
+  border: 2px solid #aaa;
+  border-radius: 50px;
+  display: grid;
+  place-items: center;
+}
+header nav section > * svg {
+  width: 15px;
+  height: auto;
+  padding: 5px;
 }
 
 main {
@@ -240,6 +251,11 @@ footer .video-settings {
 footer .video-settings .playControls > * {
   width: 25px;
   height: 25px;
+}
+footer .video-settings .playControls > * > * {
+  background: transparent;
+  border: 2px solid #555;
+  color: #ccc;
 }
 footer .editorContainer {
   display: flex;

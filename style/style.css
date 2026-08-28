@@ -987,11 +987,14 @@ body:not(.dark) header .logo img {
   border: 5px solid var(--bg);
   border: none;
   transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease, color 0.2s ease, background 0.2s ease, border-color 0.25s ease;
+  border: 3px solid gold;
 }
 .cta:hover {
-  background: #efe6ff;
+  background: white;
   color: #6c5ce7;
   filter: none;
+  border: 3px solid gold;
+  filter: drop-shadow(0 0 10px rgb(255, 225.9090909091, 69.5454545454));
 }
 .cta:active {
   transform: translateY(0);
@@ -1002,7 +1005,7 @@ body:not(.dark) header .logo img {
   width: 0;
   height: 0;
   border-radius: 50%;
-  background: #fff;
+  background: rgb(255, 244, 219);
   transform: translate(-50%, -50%);
   transition: width 0.9s ease, height 0.9s ease, opacity 0s ease;
   z-index: -1;

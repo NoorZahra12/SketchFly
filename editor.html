@@ -10,8 +10,10 @@
     <!-- everything below is shown in icons buttons only and when u hover it, it can show the text too -->
     <nav>
         <section class="nav-left-basic-functions">
-            <button class="icon-btn" title="Home"><a href="./index.html"><img src="././editorAssets/icons/home.svg" alt="Home"></a></button>
-            <button class="icon-btn" title="ProjectSettings" id="project-settings-btn"><img src="./editorAssets/icons/settings.svg" alt="Project settings"></button>
+            <button class="icon-btn" title="Home"><a href="./index.html"><img src="././editorAssets/icons/home.svg"
+                        alt="Home"></a></button>
+            <button class="icon-btn" title="ProjectSettings" id="project-settings-btn"><img
+                    src="./editorAssets/icons/settings.svg" alt="Project settings"></button>
             <button class="icon-btn" title="Undo"><img src="./editorAssets/icons/undo.svg" alt="Undo"></button>
             <button class="icon-btn" title="Redo"><img src="./editorAssets/icons/redo.svg" alt="Redo"></button>
             <button class="icon-btn" title="Cut"><img src="./editorAssets/icons/cut.svg" alt="Cut"></button>
@@ -30,7 +32,6 @@
             <!-- <button class="icon-btn" title="Guides">⊞</button> -->
             <!-- <button class="icon-btn" title="Shapes">■</button> -->
             <!-- <button class="icon-btn" title="Text">T</button> -->
-            <button class="icon-btn" title="Onion"><img src="editorAssets/icons/onion.svg" alt="Onion skin"></button>
             <!-- layer -->
             <!-- <button class="icon-btn" title="Layers">🗂️</button> -->
         </section>
@@ -39,10 +40,11 @@
 
 <main>
     <aside>
+        <button class="icon-btn" title="Onion"><img src="editorAssets/icons/onion.svg" alt="Onion skin"></button>
         <button title="Brush" id="pencil_tool"><img src="editorAssets/icons/pencil.svg" alt="Brush"></button>
         <button title="Eraser" id="eraser_tool"><img src="editorAssets/icons/eraser.svg" alt="Eraser"></button>
         <input type="color" id="colorPicker" value="#000000">
-        <button id="zoomReset" title="Reset Zoom">100%</button>
+        <!-- <button title="Transform" id="transform-tool" class="tool-tile"><img src="./editorAssets/icons/transform.svg" alt=""><span>Transform</span></button> -->
         <!-- <button title="Hand Tool" id="hand_tool">✋</button> -->
 
     </aside>
@@ -56,14 +58,15 @@
 
 <footer>
     <section class="video-settings">
-        <article class="playControls">
-            <button title="Rewind"><</button>
-                    <button title="Play / Pause">▷</button>
-                    <button title="Forward">></button>
-        </article>
         <article for="timedisplay">
             <label for="currentTime">00:00/00:00</label>
         </article>
+        <article class="playControls">
+            <button title="Rewind" class="playback-btn rewind"><</button>
+            <button title="Play / Pause" class="playback-btn play-pause">▶</button>
+            <button title="Forward" class="playback-btn forward">></button>
+        </article>
+        <button id="zoomReset" title="Reset Zoom">100%</button>
         <!-- <article class="fpsZoomControls">
             <button>-</button>
             <label for="">100%</label>
@@ -86,17 +89,25 @@
         </section>
         <section class="editingPanel">
             <div class="panel-resize-handle" aria-label="Resize editor tools panel"></div>
-            <button title="Add Layers" class="tool-tile"><img src="./editorAssets/icons/add-layer.svg" alt=""><span>Add layer</span></button>
-            <!-- <button title="Add Frames">add frames</button> -->
-            <button title="copy clip" class="tool-tile"><img src="./editorAssets/icons/copy-clip.svg" alt=""><span>Copy clip</span></button>
-            <button title="paste clip" class="tool-tile"><img src="./editorAssets/icons/paste-clip.svg" alt=""><span>Paste clip</span></button>
-            <button title="delete clip" class="tool-tile"><img src="./editorAssets/icons/delete-clip.svg" alt=""><span>Delete clip</span></button>
-            <button title="Split clip" class="tool-tile"><img src="./editorAssets/icons/split-clip.svg" alt=""><span>Split clip</span></button>
-            <button title="Undo" class="tool-tile"><img src="./editorAssets/icons/undo.svg" alt=""><span>Undo</span></button>
-            <button title="Redo" class="tool-tile"><img src="./editorAssets/icons/redo.svg" alt=""><span>Redo</span></button>
-            <button title="Transform" id="transform-tool" class="tool-tile"><img src="./editorAssets/icons/transform.svg" alt=""><span>Transform</span></button>
-            <label class="media-import tool-tile"><img src="./editorAssets/icons/import.svg" alt=""><span>Import assets</span><input id="media-import" type="file" accept="image/png,image/jpeg,video/mp4,audio/mpeg,audio/mp3" multiple></label>
-            <button title="Export video" id="export-video-btn" class="tool-tile"><img src="./editorAssets/icons/export-video.svg" alt=""><span>Export video</span></button>
+            <button title="Split clip" class="tool-tile"><img src="./editorAssets/icons/split-clip.svg"
+                    alt=""><span>Split clip</span></button>
+            <button title="copy clip" class="tool-tile"><img src="./editorAssets/icons/copy-clip.svg" alt=""><span>Copy
+                    clip</span></button>
+            <button title="paste clip" class="tool-tile"><img src="./editorAssets/icons/paste-clip.svg"
+                    alt=""><span>Paste clip</span></button>
+            <button title="delete clip" class="tool-tile"><img src="./editorAssets/icons/delete-clip.svg"
+                    alt=""><span>Delete clip</span></button>
+            <button title="Add Layers" class="tool-tile"><img src="./editorAssets/icons/add-layer.svg" alt=""><span>Add
+                    layer</span></button>
+            <button title="Undo" class="tool-tile"><img src="./editorAssets/icons/undo.svg"
+                    alt=""><span>Undo</span></button>
+            <button title="Redo" class="tool-tile"><img src="./editorAssets/icons/redo.svg"
+                    alt=""><span>Redo</span></button>
+            <label class="media-import tool-tile"><img src="./editorAssets/icons/import.svg" alt=""><span>Import
+                    assets</span><input id="media-import" type="file"
+                    accept="image/png,image/jpeg,video/mp4,audio/mpeg,audio/mp3" multiple></label>
+            <button title="Export video" id="export-video-btn" class="tool-tile"><img
+                    src="./editorAssets/icons/export-video.svg" alt=""><span>Export video</span></button>
             <!-- <button title="delete clip">split clip</button> -->
         </section>
     </div>

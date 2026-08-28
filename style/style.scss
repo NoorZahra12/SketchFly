@@ -472,11 +472,14 @@ body:not(.dark) {
         color 0.2s ease,
         background 0.2s ease,
         border-color 0.25s ease;
+    border: 3px solid gold;
 
     &:hover {
-        background: #efe6ff;
+        background: white;
         color: variables.$primary;
         filter: none;
+        border: 3px solid gold;
+        filter: drop-shadow(0 0 10px color.scale(gold, $lightness: 27.2727272727%));
     }
 
     &:active {
@@ -489,7 +492,7 @@ body:not(.dark) {
         width: 0;
         height: 0;
         border-radius: 50%;
-        background: #fff;
+        background: rgb(255, 244, 219);
         transform: translate(-50%, -50%);
         transition: width 0.9s ease, height 0.9s ease, opacity 0.0s ease;
         z-index: -1;
@@ -517,8 +520,9 @@ body:not(.dark) {
     width: max-content;
     max-width: calc(100vw - 40px);
     pointer-events: auto;
+
     @include mixins.media('mobile') {
-        bottom:90px;
+        bottom: 90px;
     }
 
 }

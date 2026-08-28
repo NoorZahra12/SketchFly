@@ -882,6 +882,8 @@ window.addEventListener("mouseup", () => {
 
 function render() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     for (let i = layers.length - 1; i >= 0; i--) {
         for (const clip of layers[i]) {
@@ -993,6 +995,8 @@ function renderFramePreview(frame, previewCtx) {
     for (let i = layers.length - 1; i >= 0; i--) {
         for (const clip of layers[i]) {
             if (clip.contains(frame)) {
+                previewCtx.fillStyle = '#ffffff';
+                previewCtx.fillRect(0, 0, 20, 20);
                 previewCtx.drawImage(clip.canvas, 0, 0, canvas.width, canvas.height, 0, 0, 20, 20);
             }
         }
@@ -1052,8 +1056,13 @@ function pause() {
 }
 
 function togglePlayPause() {
-    if (playing) pause();
-    else play();
+    if (playing) {
+        pause();
+        playBtn.innerHTML = '&#x25B6;'; // Play symbol
+    } else {
+        play();
+        playBtn.innerHTML = '&#x23F8;'; // Pause symbol
+    }
 }
 
 function copyClipContent() {
@@ -1497,10 +1506,20 @@ window.addEventListener("keyup", e => {
     }
 });
 
+// This is to pause the playing of the loop when clicking anywhere on the screen
+document.addEventListener('click', function(e) {
+    // Ignore clicks on the Play/Pause button, so it can still toggle properly
+    if (e.target.closest('button[title="Play / Pause"]')) {
+        return;
+    }
+    if (playing) {
+        pause();
+    }
+});
+
 async function initializeEditor() {
     setupToolPanel(pencilBtn, "pencil");
     setupToolPanel(eraserBtn, "eraser");
-
     if (projectId) {
         try {
             await restoreProject();
