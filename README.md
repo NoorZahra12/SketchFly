@@ -2,33 +2,6 @@
 
 SketchFly is a browser-based 2D animation workspace. It is designed to let users create frame-based drawings, arrange them across layers, preview the animation, and manage project preferences from a lightweight interface.
 
-## Purpose
-
-The project is a frontend prototype for an animation studio. Its main goals are to provide:
-
-- A home screen for navigating the app.
-- A project creation form with a project name, canvas size, and FPS value.
-- A canvas editor with pencil and eraser tools.
-- A layer-based timeline made from individual animation clips.
-- Playback, frame navigation, onion-skin previews, undo/redo, and clip editing.
-- A gallery of example projects and a theme setting.
-
-## Current Status
-
-The app is currently a static browser application with no build step or backend. Projects and exports are stored in IndexedDB for the current browser profile.
-
-- New projects are created from the modal and opened as `editor.html?id=<project-id>`.
-- The editor loads the selected project's settings, layers, clips, and frame images.
-- Changes autosave after drawing and timeline edits. `Ctrl+S` also saves immediately.
-- The gallery reads project metadata and first-frame thumbnails from IndexedDB.
-- Starred projects appear first; all other projects are ordered newest to oldest.
-- Gallery cards support star, edit settings, and delete actions through the overflow menu.
-- The editor accepts PNG, JPG, MP4, and MP3 files as timeline clips. Image clips render on the canvas, while imported media is preserved with clip metadata.
-- Assets can be added with the **Import assets** button in the editor or by dragging files onto the canvas area.
-- Video exports appear in Exports and can be downloaded. The browser's supported `MediaRecorder` format is used, so some browsers produce WebM instead of MP4.
-- Theme selection is stored in `localStorage` under `theme`.
-- `data/projects.json` remains as sample metadata, but it is not the live gallery source.
-
 ## How To Run
 
 Because the app uses JavaScript modules and `fetch()` to load HTML fragments, run it through a local web server. Opening `index.html` directly with a `file://` URL may prevent these requests from working.
@@ -118,53 +91,3 @@ style/editor.css                 Editor styles
 style/**/*.scss                  Source SCSS files for styling work
 indexAssets/images/              Logos and image assets
 ```
-
-## Current progress
-
-### Add a home page section
-
-1. Add a fragment such as `indexAssets/pages/help.html`.
-2. Add a navigation button in `index.html` with `data-section="help"`.
-3. Add any section-specific event handlers in `js/index/main.js`.
-4. Add styles in the appropriate home page stylesheet.
-
-`loadFragment()` automatically maps the `data-section` value to `indexAssets/pages/<section>.html`.
-
-### Add a gallery project
-
-Create projects through the modal. For seeded or imported projects, save records with `createProject()` and `saveProject()` so the gallery can read their metadata and thumbnail.
-
-Gallery overflow actions update project name and star state in IndexedDB. The editor's Project Settings button updates the same record.
-
-### Connect project persistence
-
-The recommended flow is:
-
-1. Create a project with `createProject()` when the modal is submitted.
-2. Save it with `saveProject()` and pass its ID to the editor, for example `editor.html?id=<project-id>`.
-3. In `js/editor/main.js`, load the project on startup with `loadProject(projectId)`.
-4. Convert stored frame image buffers back into canvases with `bufferToCanvas()`.
-5. Save after meaningful edits such as drawing, clip changes, layer changes, and project settings changes.
-6. Use `getAllProjects()` for gallery metadata and the stored `thumbnail` buffer for the first-frame preview.
-
-### Add editor icons
-
-Place SVG files in `editorAssets/icons/` using the names referenced by `editor.html`, including `pencil.svg`, `eraser.svg`, `home.svg`, `settings.svg`, `undo.svg`, `redo.svg`, `cut.svg`, `copy.svg`, `paste.svg`, `delete.svg`, and `onion.svg`.
-
-### Localization
-
-The Settings fragment creates language names with `Intl.DisplayNames`. Choosing a language calls the LibreTranslate-compatible API from `js/index/main.js` to translate page text. The `.logo` element is excluded so the SketchFly brand remains unchanged. Network access is required, and a self-hosted or authenticated endpoint is recommended for production.
-
-When changing the project schema, increment `DB_VERSION` and add a migration in `openDB()`.
-
-### Update editor behavior
-
-Keep editor state changes inside `js/editor/main.js` and reuse the existing `Clip` and layer model. When adding a new tool, update the toolbar markup in `editor.html`, register its event handlers, and include its rendering behaviour in both the pointer handlers and `render()` where appropriate.
-
-## Troubleshooting
-
-- **The gallery is empty:** create a project first, then check that browser storage is enabled and the server is started from the project root.
-- **Changes appear to be missing:** clear the browser's site data if old `localStorage` or IndexedDB values are affecting the result.
-- **Editor project data does not persist:** confirm the page is running from a local server and that browser storage is enabled for the site.
-- **Exports are WebM instead of MP4:** MP4 recording depends on browser codec support; the app chooses the best supported `MediaRecorder` MIME type.
-- **Icons are wip:** add the SVG assets to `editorAssets/icons/` using the filenames referenced by `editor.html`.
